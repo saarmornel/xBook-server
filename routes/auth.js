@@ -32,7 +32,8 @@ router.get('/facebook/callback',
         } else {
             res.redirect(client.URL);
         }
-        res.redirect(`${client.URL}#${req.user.jwtoken}`)
+        // res.redirect(`${client.URL}#${req.user.jwtoken}`)
+        res.redirect(`${client.URL}?auth_token=test`)
     }
 );
 
