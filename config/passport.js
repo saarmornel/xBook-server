@@ -32,7 +32,7 @@ module.exports = function (passport) {
 
                     // if the user is found, then log them in
                     if (user) {
-                        user.jwtoken = newUser.generateJwt();
+                        user.jwtoken = user.generateJwt();
                         return done(null, user); // user found, return that user
                     } else {
                         // if there is no user found with that facebook id, create them
