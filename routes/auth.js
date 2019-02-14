@@ -24,11 +24,11 @@ router.get('/facebook',
 router.get('/facebook/callback',
     passport.authenticate('facebook', {
         session: false,
-        failureRedirect: client.URL 
+        failureRedirect: '/failed'
     }), (req, res) => {
-        debug('callback called; clientURL:',client.URL);
+        debug('callback called');
         // res.redirect(`${client.URL}#${req.user.jwtoken}`)
-        res.redirect(`${client.URL}?auth_token=test`)
+        res.redirect(`/success?auth_token=test`)
     }
 );
 
