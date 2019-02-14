@@ -2,7 +2,6 @@
 const express = require('express');
 const path = require('path');
 const debug = require('debug')('app');
-const favicon = require('serve-favicon');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const flash     = require('connect-flash');
