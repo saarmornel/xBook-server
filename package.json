@@ -3,10 +3,10 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development DEBUG=http,app nodemon app",
-    "start": "cross-env NODE_ENV=development DEBUG=http,app node app",
-    "debug": "cross-env NODE_ENV=development DEBUG=http,app,test node --inspect app",
-    "test": "cross-env NODE_ENV=test DEBUG=http,app,test mocha --recursive"
+    "dev": "cross-env NODE_ENV=development DEBUG=app nodemon app",
+    "start": "cross-env NODE_ENV=development DEBUG=app node app",
+    "debug": "cross-env NODE_ENV=development DEBUG=app,test node --inspect app",
+    "test": "cross-env NODE_ENV=test DEBUG=app,test mocha --recursive"
   },
   "engines": {
     "node":"10.15.0"

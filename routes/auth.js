@@ -1,4 +1,5 @@
 'use strict';
+const debug = require('debug')('app');
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
@@ -24,13 +25,14 @@ router.get('/facebook/callback',
     passport.authenticate('facebook', {
         session: false
     }), (req, res) => {
+        debug('callback called');
         let success = 'false';
         if (req.user.jwtoken) {
             success = 'true';
         } else {
             res.redirect(401,client.URL);
         }
-        res.redirect(200,`${client.URL};token=${req.user.jwtoken};success=${success}?token=${req.user.jwtoken}&success=${success}`)
+        res.redirect(200,`${client.URL}#${req.user.jwtoken}`)
     }
 );
 

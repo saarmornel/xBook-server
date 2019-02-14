@@ -7,6 +7,7 @@ const configAuth = require('./auth');
 const passportJWT = require("passport-jwt");
 const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
+const debug = require('debug')('app');
 
 module.exports = function (passport) {
 
@@ -14,22 +15,20 @@ module.exports = function (passport) {
     // FACEBOOK ================================================================
     // =========================================================================
     passport.use(new FacebookStrategy({
-        // pull in our app id and secret from our auth.js file
         clientID: configAuth.facebookAuth.clientID,
         clientSecret: configAuth.facebookAuth.clientSecret,
         callbackURL: configAuth.facebookAuth.callbackURL,
         profileFields: configAuth.facebookAuth.profileFields,
     },
-
         // facebook will send back the token and profile
         function (token, refreshToken, profile, done) {
-
+            debug('got token from facebook')
             // asynchronous
             process.nextTick(function () {
 
                 // find the user in the database based on their facebook id
                 User.findOne({ 'facebook.id': profile.id }, function (err, user) {
-
+                    debug('check if user exist')
                     // if there is an error, stop everything and return that
                     // ie an error connecting to the database
                     if (err)
