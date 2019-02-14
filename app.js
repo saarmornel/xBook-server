@@ -41,13 +41,13 @@ app.use(function (req, res, next) {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
 
   // Website you wish to allow to connect
-  res.setHeader('Access-Control-Allow-Origin', `${config.client.host}:${config.client.port}`);
+  res.setHeader('Access-Control-Allow-Origin', `*`);
 
   // Request methods you wish to allow
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
 
   // Request headers you wish to allow
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+  // res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
 
   // Pass to next layer of middleware
   next();
