@@ -37,18 +37,21 @@ module.exports = function (passport) {
                     } else {
                         // if there is no user found with that facebook id, create them
                         const newUser = new User();
+                        debug('newUser init:',newUser)
                         // set all of the facebook information in our user model
                         newUser.facebook.id = profile.id; // set the users facebook id                   
                         newUser.facebook.token = token; // we will save the token that facebook provides to the user                    
                         newUser.lastName = profile.name.familyName; // look at the passport user profile to see how names are returned
                         newUser.firstName = profile.name.givenName;
                         newUser.email = profile.emails[0].value; // facebook can return multiple emails so we'll take the first
-                        newUser.save(function (err,user) {
+                        debug('newUser-before-save:',newUser)
+                        newUser.save(function (err) {
                             if (err)
                                 return done(err);
-
-                            user.jwtoken = newUser.generateJwt();
-                            return done(null, user);
+                            debug('newUser-before-jwt:',newUser)
+                            newUser.jwtoken = newUser.generateJwt();
+                            debug('newUser-after-jwt:',newUser)
+                            return done(null, newUser);
                         });
                     }
 
