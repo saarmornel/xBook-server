@@ -23,15 +23,10 @@ router.get('/facebook',
 // handle the callback after facebook has authenticated the user
 router.get('/facebook/callback',
     passport.authenticate('facebook', {
-        session: false
+        session: false,
+        failureRedirect: client.URL 
     }), (req, res) => {
-        debug('callback called');
-        let success = 'false';
-        if (req.user.jwtoken) {
-            success = 'true';
-        } else {
-            res.redirect(client.URL);
-        }
+        debug('callback called; clientURL:',client.URL);
         // res.redirect(`${client.URL}#${req.user.jwtoken}`)
         res.redirect(`${client.URL}?auth_token=test`)
     }
