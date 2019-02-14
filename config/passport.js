@@ -25,8 +25,6 @@ module.exports = function (passport) {
             debug('got token from facebook')
             // asynchronous
             process.nextTick(function () {
-
-                // find the user in the database based on their facebook id
                 User.findOne({ 'facebook.id': profile.id }, function (err, user) {
                     debug('check if user exist')
                     if (err)
