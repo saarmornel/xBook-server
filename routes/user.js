@@ -34,8 +34,8 @@ router.get('/auth/facebook', notLoggedIn,
 // handle the callback after facebook has authenticated the user
 router.get('/auth/facebook/callback',
     passport.authenticate('facebook', {
-        successRedirect : '/api/user/profile',
-        failureRedirect : '/'
+        successRedirect : 'https://auth.expo.io/@anonymous/xBook-04872410-8dd5-4024-b908-dd82385a31dc',
+        failureRedirect : '/api/user/profile'
 }));
 
 module.exports = router;
