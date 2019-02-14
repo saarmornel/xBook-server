@@ -29,14 +29,12 @@ module.exports = function (passport) {
                 // find the user in the database based on their facebook id
                 User.findOne({ 'facebook.id': profile.id }, function (err, user) {
                     debug('check if user exist')
-                    // if there is an error, stop everything and return that
-                    // ie an error connecting to the database
                     if (err)
                         return done(err);
 
                     // if the user is found, then log them in
                     if (user) {
-                        user.jwtoken = newUser.generateJwt(); // JWT CREATION!
+                        user.jwtoken = newUser.generateJwt();
                         return done(null, user); // user found, return that user
                     } else {
                         // if there is no user found with that facebook id, create them
@@ -47,13 +45,12 @@ module.exports = function (passport) {
                         newUser.lastName = profile.name.familyName; // look at the passport user profile to see how names are returned
                         newUser.firstName = profile.name.givenName;
                         newUser.email = profile.emails[0].value; // facebook can return multiple emails so we'll take the first
-                        // save our user to the database
-                        newUser.save(function (err) {
+                        newUser.save(function (err,user) {
                             if (err)
-                                throw err;
+                                return done(err);
 
-                            newUser.jwtoken = newUser.generateJwt(); // JWT CREATION!
-                            return done(null, newUser);
+                            user.jwtoken = newUser.generateJwt();
+                            return done(null, user);
                         });
                     }
 
