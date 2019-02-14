@@ -26,7 +26,7 @@ router.get('/logout', isLoggedIn, (req, res) => {
 // FACEBOOK AUTHENTICATION ROUTES =====================
 // ==================================================
 // route for facebook authentication and login
-router.get('/auth/facebook', notLoggedIn, 
+router.get('/auth/facebook', 
     passport.authenticate('facebook', { 
     scope : ['public_profile', 'email']
 }));
