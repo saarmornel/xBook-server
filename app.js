@@ -16,17 +16,15 @@ const mongoose = require('mongoose');
 require('./config/passport')(passport); // pass passport for configuration
 const routes = require('./routes');
 
-const ENV = process.env.NODE_ENV
-
 mongoose.Promise = require('bluebird');
-mongoose.connect( configDB.mongo[ENV].connectionString, 
+mongoose.connect( configDB.mongo[process.env.NODE_ENV].connectionString, 
   { useMongoClient: true, promiseLibrary: require('bluebird') } )
   .then(() =>  debug('DB connected succesfully'))
   .catch((dbErr) => {
     throw dbErr;
   });
 
-mongoose.set('debug', ENV === 'development' ? true : false);
+mongoose.set('debug', process.env.NODE_ENV === 'development' ? true : false);
   
 debug("Welcome to xBook RestAPI logger");
 
@@ -100,6 +98,6 @@ app.use((err, req, res, next) => {
   res.json(err);    //Error class is the father class of all erros, and it has {name , message}
 });
 
-app.listen(3000, function() {
-  console.log('Express server listening on port 3000');
+app.listen(process.env.PORT || 3000, function() {
+  console.log(`Express server listening on port ${process.env.NODE_ENV}`);
 });
