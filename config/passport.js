@@ -1,9 +1,6 @@
 const FacebookStrategy = require('passport-facebook').Strategy;
-// load up the user model
 const User = require('../models/User');
-// load the auth variables
 const configAuth = require('./auth');
-//jwt
 const passportJWT = require("passport-jwt");
 const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
@@ -65,7 +62,7 @@ module.exports = function (passport) {
     // =========================================================================
     passport.use(new JWTStrategy({
         jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-        secretOrKey: 'SECRET'
+        secretOrKey: configAuth.secret
     },
         function (jwtPayload, cb) {
             return cb(null, jwtPayload);

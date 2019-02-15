@@ -4,12 +4,6 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const { isLoggedIn } = require('./loggedIn');
-const userController = require('../controllers/user');
-const client = require('../config/client');
-
-router.get('/token', isLoggedIn, (req, res) => {
-    res.json(req.user)
-});
 
 router.get('/success', isLoggedIn, (req, res) => {
     res.json({success: true, auth_token: req.user })
