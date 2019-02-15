@@ -27,8 +27,7 @@ router.get('/facebook/callback',
         failureRedirect: '/api/auth/failed'
     }), (req, res) => {
         debug('callback called');
-        // res.redirect(`${client.URL}#${req.user.jwtoken}`)
-        res.redirect(`/api/auth/success?auth_token=test`)
+        res.redirect(`/api/auth/success?auth_token=${req.user.jwtoken}`)
     }
 );
 
