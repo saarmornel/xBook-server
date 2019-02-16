@@ -9,16 +9,13 @@ const unknownPicture = 'https://scontent.ftlv6-1.fna.fbcdn.net/v/t1.0-1/c47.0.16
 
 module.exports = function (passport) {
 
-    // =========================================================================
     // FACEBOOK ================================================================
-    // =========================================================================
     passport.use(new FacebookStrategy({
         clientID: configAuth.facebookAuth.clientID,
         clientSecret: configAuth.facebookAuth.clientSecret,
         callbackURL: configAuth.facebookAuth.callbackURL,
         profileFields: configAuth.facebookAuth.profileFields,
     },
-        // facebook will send back the token and profile
         function (token, refreshToken, profile, done) {
             debug('got token from facebook')
             // asynchronous
@@ -27,13 +24,9 @@ module.exports = function (passport) {
                     debug('check if user exist')
                     if (err)
                         return done(err);
-
-                    // if the user is found, then log them in
                     if (user) {
-                        debug(JSON.stringify(profile))
-                        user.picture = profile.photos ? profile.photos[0].value : '';
-                        debug('friends:',JSON.stringify(profile._json.friends))
-                        user.facebook.friends = profile.friends.data.map(friend => friend.id);
+                        newUser.picture = profile.photos ? profile.photos[0].value : unknownPicture;
+                        user.facebook.friends = profile._json.friends.data.map(friend => friend.id);
                         user.save(function (err) {
                             if (err)
                                 return done(err);
@@ -41,18 +34,14 @@ module.exports = function (passport) {
                             return done(null, user);
                         });
                     } else {
-                        // if there is no user found with that facebook id, create them
                         const newUser = new User();
-                        debug(JSON.stringify(profile))
-                        // set all of the facebook information in our user model
-                        newUser.facebook.id = profile.id; // set the users facebook id                   
-                        newUser.facebook.token = token; // we will save the token that facebook provides to the user                    
-                        newUser.lastName = profile.name.familyName; // look at the passport user profile to see how names are returned
+                        newUser.facebook.id = profile.id;                
+                        newUser.facebook.token = token; 
+                        newUser.lastName = profile.name.familyName; 
                         newUser.firstName = profile.name.givenName;
-                        newUser.email = profile.emails[0].value; // facebook can return multiple emails so we'll take the first
-                        newUser.facebook.friends = profile.friends.data.map(friend => friend.id);
+                        newUser.email = profile.emails[0].value; 
+                        newUser.facebook.friends = profile._json.friends.data.map(friend => friend.id);
                         newUser.picture = profile.photos ? profile.photos[0].value : unknownPicture;
-                        debug('newUser-before-save:',newUser)
                         newUser.save(function (err) {
                             if (err)
                                 return done(err);
@@ -66,9 +55,7 @@ module.exports = function (passport) {
 
         }));
 
-    // =========================================================================
     // JWT EXTRACTION ================================================================
-    // =========================================================================
     passport.use(new JWTStrategy({
         jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
         secretOrKey: configAuth.secret
@@ -79,3 +66,34 @@ module.exports = function (passport) {
         }
     ));
 };
+
+
+/* facebook profile structure:
+accessToken:  _______
+refreshToken:  undefined
+profile:  { id: '_______',
+  username: undefined,
+  displayName: '_______',
+  name: 
+   { familyName: '_______',
+     givenName: '_______',
+     middleName: '_______' },
+  gender: '_______',
+  profileUrl: 'https://www.facebook.com/app_scoped_user_id/_______/',
+  emails: [ { value: '_______@_______.com' } ],
+  photos: [ { value: 'https://scontent.xx.fbcdn.net/_______' } ],
+  provider: 'facebook',
+  _raw: '{"id":"_______","name":"_______","picture":{"data":{"height":200,"is_silhouette":false,"url":"https:\\/\\/scontent.xx.fbcdn.net\_______","width":200}},"first_name":"_______ _______","last_name":"_______","gender":"_______","link":"https:\\/\\/www.facebook.com\\/app_scoped_user_id\\/_______\\/","email":"_______.com","location":{"id":"_______","name":"_______"},"friends":{"data":[],"summary":{"total_count":_______}}}',
+  _json: 
+   { id: '_______',
+     name: '_______',
+     picture: { data: [Object] },
+     first_name: '_______',
+     last_name: '_______',
+     gender: '_______',
+     link: 'https://www.facebook.com/app_scoped_user_id/_______/',
+     email: '_______@_______.com',
+     location: { id: '_______', name: '_______' },
+     friends: { data: [], summary: [Object] } } }
+
+*/
