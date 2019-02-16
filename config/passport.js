@@ -57,7 +57,7 @@ module.exports = function (passport) {
 
     // JWT EXTRACTION ================================================================
     passport.use(new JWTStrategy({
-        jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
+        jwtFromRequest: ExtractJWT.fromAuthHeaderWithScheme('Bearer'),
         secretOrKey: configAuth.secret
     },
         function (jwtPayload, cb) {
