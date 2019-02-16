@@ -30,8 +30,9 @@ module.exports = function (passport) {
 
                     // if the user is found, then log them in
                     if (user) {
+                        debug(JSON.stringify(profile))
                         user.picture = profile.photos ? profile.photos[0].value : '';
-                        debug('friends:',JSON.stringify(profile.friends))
+                        debug('friends:',JSON.stringify(profile._json.friends))
                         user.facebook.friends = profile.friends.data.map(friend => friend.id);
                         user.save(function (err) {
                             if (err)
