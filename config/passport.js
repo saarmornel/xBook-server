@@ -29,7 +29,7 @@ module.exports = function (passport) {
 
                     // if the user is found, then log them in
                     if (user) {
-                        newUser.picture = profile.picture.url;
+                        user.picture = profile.picture.url;
                         user.facebook.friends = profile.friends.map(friend => friend.id);
                         user.save(function (err) {
                             if (err)
