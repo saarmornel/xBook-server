@@ -6,11 +6,9 @@ const configAuth = require('../config/auth');
 
 const userSchema = new Schema({
     facebook: {
-        type: {
-            id: String,
-            token: String,
-            friends: [String]
-        },
+        id: String,
+        token: String,
+        friends: [String]
     },
     firstName: { type: String },
     lastName: { type: String },
@@ -32,7 +30,7 @@ const userSchema = new Schema({
     });
 
 userSchema.virtual('balance').get(function () { return this.given - this.recieved });
-userSchema.virtual('fullName').get(function () { this.firstName +' '+ this.lastName });
+userSchema.virtual('fullName').get(function () { this.firstName + ' ' + this.lastName });
 
 userSchema.methods.generateJwt = function () {
     // set expiration to 60 days
