@@ -25,7 +25,7 @@ module.exports = function (passport) {
                     if (err)
                         return done(err);
                     if (user) {
-                        newUser.picture = profile.photos ? profile.photos[0].value : unknownPicture;
+                        user.picture = profile.photos ? profile.photos[0].value : unknownPicture;
                         user.facebook.friends = profile._json.friends.data.map(friend => friend.id);
                         user.save(function (err) {
                             if (err)
