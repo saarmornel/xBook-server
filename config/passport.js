@@ -61,7 +61,6 @@ module.exports = function (passport) {
         secretOrKey: configAuth.secret
     },
         function (jwtPayload, cb) {
-            debug('extract jwt')
             return cb(null, jwtPayload);
         }
     ));

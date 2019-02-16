@@ -19,9 +19,11 @@ module.exports = class userService {
     ) {
         return User
             .find(filter)
+            .select('-facebook')
             .sort(sortOrder + sortBy)
             //.skip(startIndex)
             //.limit(endIndex - startIndex)
+            .select()
             .exec();
     }
 
