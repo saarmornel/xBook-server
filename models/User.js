@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 var jwt = require('jsonwebtoken');
 const Schema = mongoose.Schema;
 import BookScheme from './UserBook';
+const configAuth = require('./auth');
 
 const userSchema = new Schema({
     facebook: {
