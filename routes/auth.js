@@ -18,7 +18,8 @@ router.get('/failed', (req, res) => {
 // route for facebook authentication and login
 router.get('/facebook',
     passport.authenticate('facebook', {
-        scope: ['public_profile', 'email']
+        authType: 'reauthenticate',
+        scope: ['public_profile', 'email', 'user_friends']
     }));
 
 // handle the callback after facebook has authenticated the user

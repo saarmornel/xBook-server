@@ -30,6 +30,7 @@ module.exports = function (passport) {
                     // if the user is found, then log them in
                     if (user) {
                         user.jwtoken = user.generateJwt();
+                        //todo: update friends list
                         return done(null, user); // user found, return that user
                     } else {
                         // if there is no user found with that facebook id, create them
@@ -41,6 +42,8 @@ module.exports = function (passport) {
                         newUser.lastName = profile.name.familyName; // look at the passport user profile to see how names are returned
                         newUser.firstName = profile.name.givenName;
                         newUser.email = profile.emails[0].value; // facebook can return multiple emails so we'll take the first
+                        newUser.facebook.friends = profile.friends.map(friend => friend.id);
+                        newUser.picture = profile.picture.url;
                         debug('newUser-before-save:',newUser)
                         newUser.save(function (err) {
                             if (err)

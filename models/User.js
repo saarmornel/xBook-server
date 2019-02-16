@@ -9,6 +9,7 @@ const userSchema = new Schema({
         type: {
             id: String,
             token: String,
+            friends: [String]
         },
         select: false,
     },
@@ -20,6 +21,7 @@ const userSchema = new Schema({
     books: [BookScheme],
     location: { type: String },
     phone: String,
+    picture: String,
 }, {
         timestamps: true,
         toObject: {
