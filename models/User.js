@@ -11,7 +11,6 @@ const userSchema = new Schema({
             token: String,
             friends: [String]
         },
-        select: false,
     },
     firstName: { type: String },
     lastName: { type: String },
