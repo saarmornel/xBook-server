@@ -11,7 +11,7 @@ module.exports = class userService {
     }
 
     static getMany(
-        filter={},
+        filter={'books.available': true},
         startIndex = 0,
         endIndex = config.pagination.resultsPerPage,
         sortOrder = '-',
@@ -29,6 +29,12 @@ module.exports = class userService {
         const userDoc = await User.findBy(userId).exec();
         userDoc.books.push(book);
         return await userDoc.save();
+    }
+
+    static findBookById(userId,bookId) {
+        const userDoc = await User.findBy(userId).exec();
+        const bookDoc = userDoc.books.id(bookId);
+        return bookDoc;
     }
 
     static updateBookById(userId, bookId, book){

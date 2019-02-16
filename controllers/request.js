@@ -30,15 +30,18 @@ module.exports = class requestController {
     }
 
     static async getReceiving(req, res) {
-        res.json(await VideoManager.getReceiving(req.user._id));
+        res.json(await requestService.getReceiving(req.user._id));
     }
 
     static async getRequesting(req, res) {
-        res.json(await VideoManager.getRequesting(req.user._id));
+        res.json(await requestService.getRequesting(req.user._id));
     }
 
     static async create(req, res) {
-        res.json(await requestService.create({requesting: req.user._id, ...req.body}));
+        const bookDoc = await userService.findBookById(req.body.receiving, req.body.book);
+        if(!!!bookDoc) throw 'book does not exist';
+        
+        res.json(await requestService.create({...req.body, requesting: req.user._id}));
     }
 
     static async updateById(req, res) {
