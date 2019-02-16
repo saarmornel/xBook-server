@@ -32,8 +32,8 @@ const userSchema = new Schema({
         }
     });
 
-userSchema.virtual('balance').get(() => this.given - this.recieved);
-userSchema.virtual('fullName').get(() => this.firstName+' '+this.lastName);
+userSchema.virtual('balance').get(function () { return this.given - this.recieved });
+userSchema.virtual('fullName').get(function () { this.firstName +' '+ this.lastName });
 
 userSchema.methods.generateJwt = function () {
     // set expiration to 60 days
