@@ -5,6 +5,7 @@ const passportJWT = require("passport-jwt");
 const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
 const debug = require('debug')('app');
+const unknownPicture = 'https://scontent.ftlv6-1.fna.fbcdn.net/v/t1.0-1/c47.0.160.160a/p160x160/10354686_10150004552801856_220367501106153455_n.jpg?_nc_cat=1&_nc_ht=scontent.ftlv6-1.fna&oh=fd6d547938a76cfe0bf7258c2ee3352b&oe=5CEAE91E';
 
 module.exports = function (passport) {
 
@@ -29,8 +30,8 @@ module.exports = function (passport) {
 
                     // if the user is found, then log them in
                     if (user) {
-                        user.picture = profile.picture.url;
-                        user.facebook.friends = profile.friends.map(friend => friend.id);
+                        user.picture = profile.photos ? profile.photos[0].value : '';
+                        user.facebook.friends = profile.friends && profile.friends.data.map(friend => friend.id);
                         user.save(function (err) {
                             if (err)
                                 return done(err);
@@ -48,8 +49,8 @@ module.exports = function (passport) {
                         newUser.lastName = profile.name.familyName; // look at the passport user profile to see how names are returned
                         newUser.firstName = profile.name.givenName;
                         newUser.email = profile.emails[0].value; // facebook can return multiple emails so we'll take the first
-                        newUser.facebook.friends = profile.friends.map(friend => friend.id);
-                        newUser.picture = profile.picture.url;
+                        newUser.facebook.friends = profile.friends && profile.friends.data.map(friend => friend.id);
+                        user.picture = profile.photos ? profile.photos[0].value : unknownPicture;
                         debug('newUser-before-save:',newUser)
                         newUser.save(function (err) {
                             if (err)
