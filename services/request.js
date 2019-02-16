@@ -13,6 +13,7 @@ module.exports = class requestService {
     static getRequesting(userId) {
         return Request
             .find({requesting: userId})
+            .populate('receiving')
             .sort('-')
             .exec();
     }
@@ -20,6 +21,7 @@ module.exports = class requestService {
     static getReceiving(userId) {
         return Request
             .find({receiving: userId})
+            .populate('requesting')
             .sort('-')
             .exec();
     }
