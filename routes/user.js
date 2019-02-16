@@ -5,6 +5,7 @@ const router = express.Router();
 const { isLoggedIn } = require('./loggedIn');
 const userController = require('../controllers/user');
 import { wrapAsync } from '../utils/wrapper';
+const userBooksController = require('../controllers/userBooks');
 
 router.get('/', isLoggedIn, wrapAsync(userController.getMany));
 router.get('/me', isLoggedIn, wrapAsync(userController.getMe));
