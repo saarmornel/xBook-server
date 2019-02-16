@@ -22,6 +22,6 @@ module.exports = class userController {
     }
 
     static async getMany(req, res) {
-        res.json(await VideoManager.getMany(req.query));
+        res.json(await userService.getMany(req.query));
     }
 }
