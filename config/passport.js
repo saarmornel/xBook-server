@@ -38,7 +38,6 @@ module.exports = function (passport) {
                             user.jwtoken = user.generateJwt();
                             return done(null, user);
                         });
-                        return done(null, user); // user found, return that user
                     } else {
                         // if there is no user found with that facebook id, create them
                         const newUser = new User();
@@ -50,7 +49,7 @@ module.exports = function (passport) {
                         newUser.firstName = profile.name.givenName;
                         newUser.email = profile.emails[0].value; // facebook can return multiple emails so we'll take the first
                         newUser.facebook.friends = profile.friends && profile.friends.data.map(friend => friend.id);
-                        user.picture = profile.photos ? profile.photos[0].value : unknownPicture;
+                        newUser.picture = profile.photos ? profile.photos[0].value : unknownPicture;
                         debug('newUser-before-save:',newUser)
                         newUser.save(function (err) {
                             if (err)
