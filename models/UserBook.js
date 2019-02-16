@@ -18,7 +18,7 @@ const BookScheme = new Schema({
     },
 });
 
-BookScheme.virtual('id').set((this, id) => {
+BookScheme.virtual('id').set(function(id) {
     this._id = id;
 });
 
