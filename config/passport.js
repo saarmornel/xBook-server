@@ -29,8 +29,14 @@ module.exports = function (passport) {
 
                     // if the user is found, then log them in
                     if (user) {
-                        user.jwtoken = user.generateJwt();
-                        //todo: update friends list
+                        newUser.picture = profile.picture.url;
+                        user.facebook.friends = profile.friends.map(friend => friend.id);
+                        user.save(function (err) {
+                            if (err)
+                                return done(err);
+                            user.jwtoken = user.generateJwt();
+                            return done(null, user);
+                        });
                         return done(null, user); // user found, return that user
                     } else {
                         // if there is no user found with that facebook id, create them
@@ -48,9 +54,7 @@ module.exports = function (passport) {
                         newUser.save(function (err) {
                             if (err)
                                 return done(err);
-                            debug('newUser-before-jwt:',newUser)
                             newUser.jwtoken = newUser.generateJwt();
-                            debug('newUser-after-jwt:',newUser)
                             return done(null, newUser);
                         });
                     }
