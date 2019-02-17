@@ -14,19 +14,18 @@ module.exports = class userService {
 
     static getMany(
         excludeId = null,
-        startIndex = 0,
-        endIndex = config.pagination.resultsPerPage,
+        page = 0,
         sortOrder = '-',
         sortBy = 'recieved',
     ) {
         const filter = {'books.available': { $eq: true}, '_id': { $ne: excludeId }};
-
+        const perPage = config.pagination.resultsPerPage;
         return User
             .find(filter)
             .select('-facebook')
             .sort(sortOrder + sortBy)
-            .skip(startIndex)
-            .limit(endIndex - startIndex)
+            .skip(perPage * page)
+            .limit(perPage)
             .exec();
     }
 
