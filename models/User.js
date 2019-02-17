@@ -20,6 +20,7 @@ const userSchema = new Schema({
     phone: String,
     picture: String,
 }, {
+        usePushEach: true,
         timestamps: true,
         toObject: {
             virtuals: true
@@ -33,10 +34,11 @@ userSchema.virtual('balance').get(function () { return this.given - this.recieve
 userSchema.virtual('fullName').get(function () { return this.firstName + ' ' + this.lastName });
 
 userSchema.methods.generateJwt = function () {
-    // set expiration to 60 days
-    var today = new Date();
-    var exp = new Date(today);
-    exp.setDate(today.getDate() + 60);
+    const daysExpired = 60;
+
+    const today = new Date();
+    let exp = new Date(today);
+    exp.setDate(today.getDate() + daysExpired);
 
     return jwt.sign({
         _id: this._id,
