@@ -3,7 +3,7 @@ const User = require('../models/User');
 const config = require('../config/query');
 
 module.exports = class userService {
-
+    
     static getById(id) {
         return User.findById(
             id,
@@ -13,9 +13,9 @@ module.exports = class userService {
     }
 
     static getMany(
-        filter={'books.available': { $eq: true}},
         startIndex = 0,
         endIndex = config.pagination.resultsPerPage,
+        filter={'books.available': { $eq: true}},
         sortOrder = '-',
         sortBy = 'recieved',
     ) {
@@ -23,8 +23,8 @@ module.exports = class userService {
             .find(filter)
             .select('-facebook')
             .sort(sortOrder + sortBy)
-            //.skip(startIndex)
-            //.limit(endIndex - startIndex)
+            .skip(startIndex)
+            .limit(endIndex - startIndex)
             .exec();
     }
 
@@ -33,7 +33,8 @@ module.exports = class userService {
         if(!userDoc) throw 'User not found!'
 
         userDoc.books.push(book);
-        return await userDoc.save();
+        await userDoc.save();
+        return book;
     }
 
     static async findBookById(userId,bookId) {
@@ -50,7 +51,8 @@ module.exports = class userService {
 
         const bookDoc = userDoc.books.id(bookId);
         bookDoc.set(book);
-        return await userDoc.save();
+        await userDoc.save();
+        return bookDoc;
     }
 
     static async deleteBookById(userId, bookId){
@@ -58,7 +60,8 @@ module.exports = class userService {
         if(!userDoc) throw 'User not found!'
         
         userDoc.books.id(bookId).remove();
-        return await userDoc.save();
+        await userDoc.save();
+        return null;
     }
 
 }

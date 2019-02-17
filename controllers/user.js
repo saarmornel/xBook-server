@@ -22,6 +22,6 @@ module.exports = class userController {
     }
 
     static async getMany(req, res) {
-        res.json(await userService.getMany());
+        res.json(await userService.getMany(req.query.start));
     }
 }
