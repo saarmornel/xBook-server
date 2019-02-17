@@ -3,7 +3,7 @@ const User = require('../models/User');
 const config = require('../config/query');
 
 module.exports = class userService {
-    //todo: remove facebook field
+    
     static getById(id) {
         return User.findById(
             id,
