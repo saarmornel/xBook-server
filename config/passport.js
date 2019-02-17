@@ -1,87 +1,98 @@
-// I used this tutorial to configure the Passportjs: 
-// https://scotch.io/tutorials/easy-node-authentication-setup-and-local
-
-//there is another way use custom cb:
-//https://stackoverflow.com/questions/15711127/express-passport-node-js-error-handling
-//https://stackoverflow.com/questions/32001821/passport-local-strategy-done-callback-does-not-pass-error-json-message
-
 const FacebookStrategy = require('passport-facebook').Strategy;
-
-// load up the user model
-const User       = require('../models/User');
-
-// load the auth variables
+const User = require('../models/User');
 const configAuth = require('./auth');
+const passportJWT = require("passport-jwt");
+const JWTStrategy = passportJWT.Strategy;
+const ExtractJWT = passportJWT.ExtractJwt;
+const debug = require('debug')('app');
+const unknownPicture = 'https://scontent.ftlv6-1.fna.fbcdn.net/v/t1.0-1/c47.0.160.160a/p160x160/10354686_10150004552801856_220367501106153455_n.jpg?_nc_cat=1&_nc_ht=scontent.ftlv6-1.fna&oh=fd6d547938a76cfe0bf7258c2ee3352b&oe=5CEAE91E';
 
-module.exports = function(passport) {
-    // =========================================================================
-    // passport session setup ==================================================
-    // =========================================================================
-    // required for persistent login sessions
-    // passport needs ability to serialize and unserialize users out of session
-    // used to serialize the user for the session
-    passport.serializeUser(function(user, done) {
-        done(null, user.id);
-    });
+module.exports = function (passport) {
 
-    // used to deserialize the user
-    passport.deserializeUser(function(id, done) {
-        User.findById(id, function(err, user) {
-            done(err, user);                        //user is what is in req.user
-        });
-    });
-
-
-    // =========================================================================
     // FACEBOOK ================================================================
-    // =========================================================================
     passport.use(new FacebookStrategy({
-        // pull in our app id and secret from our auth.js file
-        clientID        : configAuth.facebookAuth.clientID,
-        clientSecret    : configAuth.facebookAuth.clientSecret,
-        callbackURL     : configAuth.facebookAuth.callbackURL,
-        profileFields   : configAuth.facebookAuth.profileFields, 
+        clientID: configAuth.facebookAuth.clientID,
+        clientSecret: configAuth.facebookAuth.clientSecret,
+        callbackURL: configAuth.facebookAuth.callbackURL,
+        profileFields: configAuth.facebookAuth.profileFields,
     },
+        function (token, refreshToken, profile, done) {
+            debug('got token from facebook')
+            // asynchronous
+            process.nextTick(function () {
+                User.findOne({ 'facebook.id': profile.id }, function (err, user) {
+                    debug('check if user exist')
+                    if (err)
+                        return done(err);
+                    if (user) {
+                        user.picture = profile.photos ? profile.photos[0].value : unknownPicture;
+                        user.facebook.friends = profile._json.friends.data.map(friend => friend.id);
+                        user.save(function (err) {
+                            if (err)
+                                return done(err);
+                            user.jwtoken = user.generateJwt();
+                            return done(null, user);
+                        });
+                    } else {
+                        const newUser = new User();
+                        newUser.facebook.id = profile.id;                
+                        newUser.facebook.token = token; 
+                        newUser.lastName = profile.name.familyName; 
+                        newUser.firstName = profile.name.givenName;
+                        newUser.email = profile.emails[0].value; 
+                        newUser.facebook.friends = profile._json.friends.data.map(friend => friend.id);
+                        newUser.picture = profile.photos ? profile.photos[0].value : unknownPicture;
+                        newUser.save(function (err) {
+                            if (err)
+                                return done(err);
+                            newUser.jwtoken = newUser.generateJwt();
+                            return done(null, newUser);
+                        });
+                    }
 
-    // facebook will send back the token and profile
-    function(token, refreshToken, profile, done) {
-
-        // asynchronous
-        process.nextTick(function() {
-
-            // find the user in the database based on their facebook id
-            User.findOne({ 'facebook.id' : profile.id }, function(err, user) {
-
-                // if there is an error, stop everything and return that
-                // ie an error connecting to the database
-                if (err)
-                    return done(err);
-
-                // if the user is found, then log them in
-                if (user) {
-                    return done(null, user); // user found, return that user
-                } else {
-                    // if there is no user found with that facebook id, create them
-                    const newUser = new User();
-                    // set all of the facebook information in our user model
-                    newUser.facebook.id    = profile.id; // set the users facebook id                   
-                    newUser.facebook.token = token; // we will save the token that facebook provides to the user                    
-                    newUser.lastName  = profile.name.familyName; // look at the passport user profile to see how names are returned
-                    newUser.firstName = profile.name.givenName;
-                    newUser.email = profile.emails[0].value; // facebook can return multiple emails so we'll take the first
-                    // save our user to the database
-                    newUser.save(function(err) {
-                        if (err)
-                            throw err;
-
-                        // if successful, return the new user
-                        return done(null, newUser);
-                    });
-                }
-
+                });
             });
-        });
 
-    }));
+        }));
 
+    // JWT EXTRACTION ================================================================
+    passport.use(new JWTStrategy({
+        jwtFromRequest: ExtractJWT.fromAuthHeaderWithScheme('Bearer'),
+        secretOrKey: configAuth.secret
+    },
+        function (jwtPayload, cb) {
+            return cb(null, jwtPayload);
+        }
+    ));
 };
+
+
+/* facebook profile structure:
+accessToken:  _______
+refreshToken:  undefined
+profile:  { id: '_______',
+  username: undefined,
+  displayName: '_______',
+  name: 
+   { familyName: '_______',
+     givenName: '_______',
+     middleName: '_______' },
+  gender: '_______',
+  profileUrl: 'https://www.facebook.com/app_scoped_user_id/_______/',
+  emails: [ { value: '_______@_______.com' } ],
+  photos: [ { value: 'https://scontent.xx.fbcdn.net/_______' } ],
+  provider: 'facebook',
+  _raw: '{"id":"_______","name":"_______","picture":{"data":{"height":200,"is_silhouette":false,"url":"https:\\/\\/scontent.xx.fbcdn.net\_______","width":200}},"first_name":"_______ _______","last_name":"_______","gender":"_______","link":"https:\\/\\/www.facebook.com\\/app_scoped_user_id\\/_______\\/","email":"_______.com","location":{"id":"_______","name":"_______"},"friends":{"data":[],"summary":{"total_count":_______}}}',
+  _json: 
+   { id: '_______',
+     name: '_______',
+     picture: { data: [Object] },
+     first_name: '_______',
+     last_name: '_______',
+     gender: '_______',
+     link: 'https://www.facebook.com/app_scoped_user_id/_______/',
+     email: '_______@_______.com',
+     location: { id: '_______', name: '_______' },
+     friends: { data: [], summary: [Object] } } }
+
+*/

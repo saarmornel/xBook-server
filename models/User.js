@@ -1,39 +1,52 @@
 const mongoose = require('mongoose');
-const bcrypt   = require('bcrypt-nodejs');
+var jwt = require('jsonwebtoken');
 const Schema = mongoose.Schema;
-
-const BOOK_STATUS = {
-    giveAway: 'GIVE_AWAY',
-    reading: 'READING'
-}
-
-const BookScheme = new Schema({ 
-    bookId: {type: String, required: true}, 
-    status: {type: String, required: true, enum: [Object.values(BOOK_STATUS)]}, 
-})
+import BookScheme from './UserBook';
+const configAuth = require('../config/auth');
 
 const userSchema = new Schema({
-    facebook         : {
-        id           : String,
-        token        : String,
+    facebook: {
+        id: String,
+        token: String,
+        friends: [String]
     },
-    // TODO:support in google auth
-    // google           : {
-    //     id           : String,
-    //     token        : String,
-    // },
-    firstName        : { type: String },
-    lastName         : { type: String },
-    email            : { type: String },
-    given            : { type: Number },
-    recieved         : { type: Number },
-    books            : [BookScheme]
-    // location         : { type: String },
-    // phone            : String,
-
+    firstName: { type: String },
+    lastName: { type: String },
+    email: { type: String },
+    given: { type: Number, default: 0 },
+    recieved: { type: Number, default: 0 },
+    books: [BookScheme],
+    location: { type: String },
+    phone: String,
+    picture: String,
 }, {
-    //usePushEach: true
-    timestamps: true,
-});
+        usePushEach: true,
+        timestamps: true,
+        toObject: {
+            virtuals: true
+        },
+        toJSON: {
+            virtuals: true
+        }
+    });
+
+userSchema.virtual('balance').get(function () { return this.given - this.recieved });
+userSchema.virtual('fullName').get(function () { return this.firstName + ' ' + this.lastName });
+
+userSchema.methods.generateJwt = function () {
+    const daysExpired = 60;
+
+    const today = new Date();
+    let exp = new Date(today);
+    exp.setDate(today.getDate() + daysExpired);
+
+    return jwt.sign({
+        _id: this._id,
+        firstName: this.firstName,
+        lastName: this.lastName,
+        email: this.email,
+        exp: parseInt(exp.getTime() / 1000),
+    }, configAuth.secret);
+};
 
 module.exports = mongoose.model('User', userSchema);

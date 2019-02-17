@@ -50,13 +50,7 @@ app.use(function (req, res, next) {
   next();
 });
 
-// required for passport
-app.use(session({    
-  secret: configAuth.sessionSecret,
-  resave: false,
-  saveUninitialized: false})); // session secret
 app.use(passport.initialize());
-app.use(passport.session()); // persistent login sessions
 app.use(flash());
 app.use('/api', routes);
 
@@ -98,5 +92,5 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(process.env.PORT || 3000, function() {
-  console.log(`Express server listening on port ${process.env.NODE_ENV}`);
+  console.log(`Express server listening on port ${process.env.PORT || 3000}`);
 });

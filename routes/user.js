@@ -1,41 +1,19 @@
 'use strict';
+const debug = require('debug')('app');
 const express = require('express');
 const router = express.Router();
-const passport = require('passport');
-const { isLoggedIn, notLoggedIn } = require('./loggedIn');
+const { isLoggedIn } = require('./loggedIn');
 const userController = require('../controllers/user');
+import { wrapAsync } from '../utils/wrapper';
+const userBooksController = require('../controllers/userBooks');
 
-// =====================================================
-// PROFILE SECTION FOR EVERY AUTH TYPE =====================
-// =======================================================
-// we will want this protected so you have to be logged in to visit
-// we will use route middleware to verify this (the isLoggedIn function)
-router.get('/profile', isLoggedIn, async (req, res) => {
-    res.json(req.user)
-});
-// =============================================================
-// route for logging out =======================================
-// ============================================================
-router.get('/logout', isLoggedIn, (req, res) => {
-    req.logout();
-    res.json({message : 'Logged out succesfully'});
-});
+router.get('/', isLoggedIn, wrapAsync(userController.getMany));
+router.get('/me', isLoggedIn, wrapAsync(userController.getMe));
+router.get('/:id', isLoggedIn, wrapAsync(userController.getById));
 
+router.post('/books', isLoggedIn, wrapAsync(userBooksController.create));
+router.put('/books/:id', isLoggedIn, wrapAsync(userBooksController.updateById));
+router.delete('/books/:id', isLoggedIn, wrapAsync(userBooksController.deleteById));
 
-// ====================================================
-// FACEBOOK AUTHENTICATION ROUTES =====================
-// ==================================================
-// route for facebook authentication and login
-router.get('/auth/facebook', 
-    passport.authenticate('facebook', { 
-    scope : ['public_profile', 'email']
-}));
-
-// handle the callback after facebook has authenticated the user
-router.get('/auth/facebook/callback',
-    passport.authenticate('facebook', {
-        successRedirect : 'https://auth.expo.io/@anonymous/xBook-04872410-8dd5-4024-b908-dd82385a31dc',
-        failureRedirect : 'https://auth.expo.io/@anonymous/xBook-04872410-8dd5-4024-b908-dd82385a31dc'
-}));
 
 module.exports = router;
