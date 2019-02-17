@@ -13,7 +13,7 @@ module.exports = class userService {
     }
 
     static getMany(
-        filter={'books.available': true},
+        filter={'books.available': { $eq: true}},
         startIndex = 0,
         endIndex = config.pagination.resultsPerPage,
         sortOrder = '-',
