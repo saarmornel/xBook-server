@@ -13,12 +13,14 @@ module.exports = class userService {
     }
 
     static getMany(
+        excludeId = null,
         startIndex = 0,
         endIndex = config.pagination.resultsPerPage,
-        filter={'books.available': { $eq: true}},
         sortOrder = '-',
         sortBy = 'recieved',
     ) {
+        const filter = {'books.available': { $eq: true}, '_id': { $ne: excludeId }};
+
         return User
             .find(filter)
             .select('-facebook')
