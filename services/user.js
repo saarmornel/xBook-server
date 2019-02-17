@@ -30,18 +30,24 @@ module.exports = class userService {
 
     static async addBook(userId, book) {
         const userDoc = await User.findById(userId).exec();
+        if(!userDoc) throw 'User not found!'
+
         userDoc.books.push(book);
         return await userDoc.save();
     }
 
     static async findBookById(userId,bookId) {
         const userDoc = await User.findById(userId).exec();
+        if(!userDoc) throw 'User not found!'
+
         const bookDoc = userDoc.books.id(bookId);
         return bookDoc;
     }
 
     static async updateBookById(userId, bookId, book){
         const userDoc = await User.findById(userId).exec();
+        if(!userDoc) throw 'User not found!'
+
         const bookDoc = userDoc.books.id(bookId);
         bookDoc.set(book);
         return await userDoc.save();
@@ -49,6 +55,8 @@ module.exports = class userService {
 
     static async deleteBookById(userId, bookId){
         const userDoc = await User.findById(userId).exec();
+        if(!userDoc) throw 'User not found!'
+        
         userDoc.books.id(bookId).remove();
         return await userDoc.save();
     }

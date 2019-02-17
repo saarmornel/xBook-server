@@ -17,9 +17,9 @@ const isOwner = (user,request) => !(request.requesting == user || request.receiv
 module.exports = class requestController {
 
     static async getById(req, res) {
-        const request = await userService.getById(req.params.id);
+        const request = await requestService.getById(req.params.id);
         if (!request) {
-            throw 'User not found!';
+            throw 'Request not found!';
         }
         const user = req.user._id;
         if(isOwner(user,request)) {
@@ -39,15 +39,15 @@ module.exports = class requestController {
 
     static async create(req, res) {
         const bookDoc = await userService.findBookById(req.body.receiving, req.body.book);
-        if(!!!bookDoc) throw 'book does not exist';
+        if(!bookDoc) throw 'book does not exist';
         
         res.json(await requestService.create({...req.body, requesting: req.user._id}));
     }
 
     static async updateById(req, res) {
-        const request = await userService.getById(req.params.id);
+        const request = await requestService.getById(req.params.id);
         if (!request) {
-            throw 'User not found!';
+            throw 'Request not found!';
         }
         const user = req.user._id;
         if(!canUpdate(user,request,req.body.status)) throw 'lack permissions';
@@ -60,9 +60,9 @@ module.exports = class requestController {
     }
 
     static async deleteById(req, res) {
-        const request = await userService.getById(req.params.id);
+        const request = await requestService.getById(req.params.id);
         if (!request) {
-            throw 'User not found!';
+            throw 'Request not found!';
         }
         const user = req.user._id;
         if(canDelete(user,request)) {
