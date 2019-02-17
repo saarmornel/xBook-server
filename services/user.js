@@ -7,7 +7,9 @@ module.exports = class userService {
     static getById(id) {
         return User.findById(
             id,
-        ).exec();
+        )
+        .select('-facebook')
+        .exec();
     }
 
     static getMany(
@@ -23,7 +25,6 @@ module.exports = class userService {
             .sort(sortOrder + sortBy)
             //.skip(startIndex)
             //.limit(endIndex - startIndex)
-            .select()
             .exec();
     }
 
