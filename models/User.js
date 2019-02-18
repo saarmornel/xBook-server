@@ -22,6 +22,7 @@ const userSchema = new Schema({
 }, {
         usePushEach: true,
         timestamps: true,
+        id: true,
         toObject: {
             virtuals: true
         },

@@ -9,6 +9,7 @@ const requestSchema = new Schema({
     status: {type: String, default: REQUEST_STATUS.pending, enum: [Object.values(REQUEST_STATUS)]}, 
 }, {
     timestamps: true,
+    id: true
 });
 
 module.exports = mongoose.model('Request', requestSchema);
