@@ -29,12 +29,12 @@ module.exports = class requestController {
         res.json(request);
     }
 
-    static async getReceiving(req, res) {
-        res.json(await requestService.getReceiving(req.user._id));
+    static async getIncoming(req, res) {
+        res.json(await requestService.getIncoming(req.user._id));
     }
 
-    static async getRequesting(req, res) {
-        res.json(await requestService.getRequesting(req.user._id));
+    static async getOutgoing(req, res) {
+        res.json(await requestService.getOutgoing(req.user._id));
     }
 
     static async create(req, res) {

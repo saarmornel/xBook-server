@@ -4,6 +4,9 @@ const config = require('../config/query');
 
 module.exports = class userService {
     
+    /*
+        in a user view: should show all books
+    */
     static getById(id) {
         return User.findById(
             id,
@@ -12,6 +15,9 @@ module.exports = class userService {
         .exec();
     }
 
+    /*
+        in a global view: should show only available books
+    */
     static getMany(
         excludeId = null,
         page = 0,

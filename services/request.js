@@ -10,7 +10,7 @@ module.exports = class requestService {
         ).exec();
     }
 
-    static getRequesting(userId) {
+    static getOutgoing(userId) {
         return Request
             .find({requesting: userId})
             .populate('receiving')
@@ -18,7 +18,7 @@ module.exports = class requestService {
             .exec();
     }
 
-    static getReceiving(userId) {
+    static getIncoming(userId) {
         return Request
             .find({receiving: userId})
             .populate('requesting')
