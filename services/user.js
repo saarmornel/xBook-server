@@ -38,7 +38,7 @@ module.exports = class userService {
     static async addBook(userId, book) {
         const userDoc = await User.findById(userId).exec();
         if(!userDoc) throw 'User not found!'
-
+        if(userDoc.books.id(book)) throw 'You already have the book!';
         userDoc.books.push(book);
         await userDoc.save();
         return book;
