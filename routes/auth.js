@@ -25,10 +25,10 @@ router.get('/facebook',
 router.get('/facebook/callback',
     passport.authenticate('facebook', {
         session: false,
-        failureRedirect: '/api/auth/failed'
+        failureRedirect: 'https://xbook-web.herokuapp.com/sign_in/failed'
     }), (req, res) => {
         debug('callback called');
-        res.redirect(`/api/auth/success?auth_token=${req.user.jwtoken}`)
+        res.redirect(`https://xbook-web.herokuapp.com/`)
     }
 );
 
