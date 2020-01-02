@@ -14,6 +14,7 @@ const app = express();
 const mongoose = require('mongoose');
 require('./config/passport')(passport); // pass passport for configuration
 const routes = require('./routes');
+const cors = require('cors');
 
 mongoose.Promise = require('bluebird');
 mongoose.connect( configDB.mongo[process.env.NODE_ENV].connectionString, 
@@ -27,28 +28,13 @@ mongoose.set('debug', process.env.NODE_ENV === 'development' ? true : false);
   
 debug("Welcome to xBook RestAPI logger");
 
+app.use(cors());
+app.options('*', cors());
 app.use(morgan('dev'));     //should be removed in production
 app.use(cookieParser()); // read cookies (needed for auth)
 app.use(bodyParser.json());   //transition req.body from json to Object
 app.use(bodyParser.urlencoded({'extended':'false'}));  //transition req.body from x-www-form-urlencoded to Object
 app.use(express.static(path.join(__dirname, 'public')));              
-
-app.use(function (req, res, next) {
-
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-
-  // Website you wish to allow to connect
-  res.setHeader('Access-Control-Allow-Origin', `*`);
-
-  // Request methods you wish to allow
-  res.setHeader('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH,OPTIONS');
-
-  // Request headers you wish to allow
-  // res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-  res.setHeader("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers,**Authorization**");
-  // Pass to next layer of middleware
-  next();
-});
 
 app.use(passport.initialize());
 app.use(flash());
