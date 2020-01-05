@@ -3,10 +3,10 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development DEBUG=app nodemon --exec babel-node app",
-    "start": "cross-env NODE_ENV=development DEBUG=app babel-node app",
-    "debug": "cross-env NODE_ENV=development DEBUG=app,test babel-node --inspect app",
-    "test": "cross-env NODE_ENV=test DEBUG=app,test mocha --recursive"
+    "dev": "nodemon --exec babel-node -r node_modules/dotenv/config app",
+    "start": "babel-node app",
+    "debug": "babel-node -r node_modules/dotenv/config --inspect app",
+    "test": "mocha -r node_modules/dotenv/config --recursive"
   },
   "engines": {
     "node": "10.15.0"
@@ -22,8 +22,8 @@
     "cookie-parser": "^1.4.3",
     "core-js": "^2.4.1",
     "cors": "^2.8.5",
-    "cross-env": "^5.1.4",
     "debug": "^3.1.0",
+    "dotenv": "^8.2.0",
     "express": "^4.16.2",
     "express-session": "^1.15.6",
     "jsonwebtoken": "^8.4.0",

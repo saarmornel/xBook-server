@@ -7,9 +7,6 @@ const bodyParser = require('body-parser');
 const flash     = require('connect-flash');
 const passport = require('passport');
 const cookieParser = require('cookie-parser');
-const session = require('express-session');
-const configDB = require('./config/database.js');
-const configAuth = require('./config/auth');
 const app = express();
 const mongoose = require('mongoose');
 require('./config/passport')(passport); // pass passport for configuration
@@ -17,14 +14,14 @@ const routes = require('./routes');
 const cors = require('cors');
 
 mongoose.Promise = require('bluebird');
-mongoose.connect( configDB.mongo[process.env.NODE_ENV].connectionString, 
+mongoose.connect( process.env.MONGO_CON_STR, 
   { useMongoClient: true, promiseLibrary: require('bluebird') } )
   .then(() =>  debug('DB connected succesfully'))
   .catch((dbErr) => {
     throw dbErr;
   });
 
-mongoose.set('debug', process.env.NODE_ENV === 'development' ? true : false);
+mongoose.set('debug', process.env.ENV === 'development' ? true : false);
   
 debug("Welcome to xBook RestAPI logger");
 
@@ -77,6 +74,6 @@ app.use((err, req, res, next) => {
   res.json(err);    //Error class is the father class of all erros, and it has {name , message}
 });
 
-app.listen(process.env.PORT || 3000, function() {
-  console.log(`Express server listening on port ${process.env.PORT || 3000}`);
+app.listen(process.env.SERVER_PORT, function() {
+  console.log(`Express server listening on port ${process.env.SERVER_PORT}`);
 });
