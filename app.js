@@ -12,6 +12,10 @@ const mongoose = require('mongoose');
 require('./config/passport')(passport); // pass passport for configuration
 const routes = require('./routes');
 const cors = require('cors');
+const http = require('http')
+  , https = require('https');
+const fs = require('fs');
+
 
 mongoose.Promise = require('bluebird');
 mongoose.connect( process.env.MONGO_CON_STR, 
@@ -74,6 +78,10 @@ app.use((err, req, res, next) => {
   res.json(err);    //Error class is the father class of all erros, and it has {name , message}
 });
 
-app.listen(process.env.PORT, function() {
-  console.log(`Express server listening on port ${process.env.PORT}`);
-});
+const httpsOptions = {
+  key: fs.readFileSync('./certs/key.pem'),
+  cert: fs.readFileSync('./certs/cert.pem')
+}
+
+http.createServer(app).listen(process.env.PORT || 80);
+process.env.ENV === 'development' && https.createServer(httpsOptions, app).listen(443);
