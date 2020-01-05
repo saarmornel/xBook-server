@@ -25,10 +25,10 @@ router.get('/facebook',
 router.get('/facebook/callback',
     passport.authenticate('facebook', {
         session: false,
-        failureRedirect: `${CLIENT_URL}/sign_in?auth_token=null`
+        failureRedirect: `${process.env.CLIENT_URL}/sign_in?auth_token=null`
     }), (req, res) => {
         debug('callback called');
-        res.redirect(`${CLIENT_URL}/sign_in?auth_token=${req.user.jwtoken}`)
+        res.redirect(`${process.env.CLIENT_URL}/sign_in?auth_token=${req.user.jwtoken}`)
     }
 );
 

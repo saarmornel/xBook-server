@@ -74,6 +74,6 @@ app.use((err, req, res, next) => {
   res.json(err);    //Error class is the father class of all erros, and it has {name , message}
 });
 
-app.listen(process.env.SERVER_PORT, function() {
-  console.log(`Express server listening on port ${process.env.SERVER_PORT}`);
+app.listen(process.env.PORT, function() {
+  console.log(`Express server listening on port ${process.env.PORT}`);
 });
