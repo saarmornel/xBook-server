@@ -62,13 +62,7 @@ app.use((err, req, res, next) => {
   /////mongoose validation error
   if(err.name == 'ValidationError') {
     err.status = 400;
-    //could check what field failed validation
-    let fieldErrors = '';
-    for(field of err.errors) {
-      debug(err.errors[field].message);
-      fieldErrors += err.errors[field].message + '; ';
-    }
-    err.message = fieldErrors;    //maybe not should be display for the user
+    debug(err);
   }
 
   
