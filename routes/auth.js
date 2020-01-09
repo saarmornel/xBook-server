@@ -4,14 +4,6 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 
-router.get('/success', (req, res) => {
-    res.json({success: true, auth_token: req.user })
-});
-
-router.get('/failed', (req, res) => {
-    res.json({success: false})
-});
-
 // ====================================================
 // FACEBOOK AUTHENTICATION ROUTES =====================
 // ==================================================
