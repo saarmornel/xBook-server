@@ -45,3 +45,4 @@ export const getBookById = async (id) => {
 }
 
 const APIKey = process.env.GOOGLE_API_KEY;
+debug('APIKey:'+APIKey)

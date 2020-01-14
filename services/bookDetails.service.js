@@ -1,5 +1,5 @@
 import * as googleBooks from './googleBooks.serivce';
-const debug = require('debug')('bookDetails');
+const debug = require('debug')('app:bookDetails');
 
 export const getBook = (id) => {
     return googleBooks.getBookById(id);

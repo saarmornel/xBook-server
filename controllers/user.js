@@ -1,7 +1,7 @@
 'use strict'
 const userService = require('../services/user');
 import { populateUserBooks, populateUsersBooks } from "../services/bookDetails.service";
-const debug = require('debug')('userController');
+const debug = require('debug')('app:userController');
 
 module.exports = class userController {
 
