@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon --exec babel-node -r node_modules/dotenv/config app",
+    "dev": "sudo kill node && nodemon --exec babel-node -r node_modules/dotenv/config app",
     "start": "babel-node app",
     "debug": "babel-node -r node_modules/dotenv/config --inspect app",
     "test": "mocha -r node_modules/dotenv/config --recursive"
@@ -29,6 +29,7 @@
     "jsonwebtoken": "^8.4.0",
     "mongoose": "^5.8.7",
     "morgan": "^1.9.0",
+    "node-fetch": "^2.6.0",
     "passport": "^0.4.0",
     "passport-facebook": "^2.1.1",
     "passport-jwt": "^4.0.0"

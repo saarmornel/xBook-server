@@ -1,3 +1,5 @@
+const fetch = require("node-fetch");
+const debug = require('debug')('app');
 /*
     take only the needed info from api
 */
@@ -14,12 +16,14 @@ const cleanseBook = (book) => {
 
 export const searchBook = async (bookName) => {
     try {
-        maxResults = 4;
+        const maxResults = 4;
         const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${bookName}&maxResults=${maxResults}&key=${APIKey}`);
         const resJson = await res.json();
+        debug('searchBook-res'+JSON.stringify(resJson))
         if(!resJson.totalItems) return [];
         const books = resJson.items;
         const formattedBooks = books.map(cleanseBook);
+        debug('searchBook'+JSON.stringify(formattedBooks))
         return formattedBooks;
     } catch(error) {
         console.log('httpError: ',error);
@@ -31,7 +35,9 @@ export const getBookById = async (id) => {
     try {
         const res = await fetch(`https://www.googleapis.com/books/v1/volumes/${id}?key=${APIKey}`);
         const book = await res.json();
+        debug('book-res'+JSON.stringify(book))
         const formattedBook = cleanseBook(book);
+        debug('getBookById'+JSON.stringify(formattedBook))
         return formattedBook;
     } catch(error) {
         console.log('httpError: ',error);

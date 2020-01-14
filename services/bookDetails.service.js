@@ -1,4 +1,5 @@
 import * as googleBooks from './googleBooks.serivce';
+const debug = require('debug')('bookDetails');
 
 export const getBook = (id) => {
     return googleBooks.getBookById(id);
@@ -14,8 +15,9 @@ export const populateBook = async (book) => {
 }
 
 export const populateUserBooks = async (user) => {
-    user.books = await Promise.all(user.books.map(populateBook) );
-    return user;
+    const books = await Promise.all(user.books.map(populateBook) );
+    debug('populateUserBooks',books)
+    return {...user, books};
 }
 
 export const populateUsersBooks = async (users) => {
