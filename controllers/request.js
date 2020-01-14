@@ -2,6 +2,7 @@
 const requestService = require('../services/request');
 const userService = require('../services/user');
 import { REQUEST_STATUS } from '../models/Request.Status';
+import { populateRequest, populateRequests } from "../services/bookDetails.service";
 
 const canUpdate = (user,request, proposedStatus) => {
     let canDo = [];
@@ -25,23 +26,29 @@ module.exports = class requestController {
         if(isOwner(user,request)) {
             throw 'Request does not belong to you!';
         }
-
-        res.json(request);
+        const requestWithData = await populateRequest(request);
+        res.json(requestWithData);
     }
 
     static async getIncoming(req, res) {
-        res.json(await requestService.getIncoming(req.user._id));
+        const response = await requestService.getIncoming(req.user._id)
+        .then(populateRequests)
+        res.json(response);
     }
 
     static async getOutgoing(req, res) {
-        res.json(await requestService.getOutgoing(req.user._id));
+        const response = await requestService.getOutgoing(req.user._id)
+        .then(populateRequests)
+        res.json(response);
     }
 
     static async create(req, res) {
         const bookDoc = await userService.findBookById(req.body.receiving, req.body.book);
         if(!bookDoc) throw 'book does not exist';
         
-        res.json(await requestService.create({...req.body, requesting: req.user._id}));
+        const response = await requestService.create({...req.body, requesting: req.user._id})
+        .then(populateRequest)
+        res.json(response);
     }
 
     static async updateById(req, res) {
@@ -56,7 +63,9 @@ module.exports = class requestController {
             await userService.addBook(request.requesting, request.book);
             await userService.deleteBookById(request.receiving, request.book);
         }
-        res.json(await requestService.updateById(req.params.id, req.body));
+        const response = await requestService.updateById(req.params.id, req.body)
+        .then(populateRequest)
+        res.json(response);
     }
 
     static async deleteById(req, res) {
@@ -68,7 +77,10 @@ module.exports = class requestController {
         if(canDelete(user,request)) {
             throw 'Request does not belong to you!';
         }
-        res.json(await requestService.deleteById(req.params.id));
+
+        const response = await requestService.deleteById(req.params.id)
+        .then(populateRequest)
+        res.json(response);
     }
     
 }

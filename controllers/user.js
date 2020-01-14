@@ -1,5 +1,6 @@
 'use strict'
 const userService = require('../services/user');
+import { populateUserBooks, populateUsersBooks } from "../services/bookDetails.service";
 
 module.exports = class userController {
 
@@ -8,8 +9,8 @@ module.exports = class userController {
         if (!user) {
             throw 'User not found!';
         }
-
-        res.json(user);
+        const userWithBooks = await populateUserBooks(user);
+        res.json(userWithBooks);
     }
 
     static async getMe(req, res) {
@@ -17,11 +18,13 @@ module.exports = class userController {
         if (!user) {
             throw 'User not found!';
         }
-
-        res.json(user);
+        const userWithBooks = await populateUserBooks(user);
+        res.json(userWithBooks);
     }
 
     static async getMany(req, res) {
-        res.json(await userService.getMany(req.user._id, req.query.startIndex));
+        const users = await userService.getMany(req.user._id, req.query.startIndex);
+        const usersWithBooks = await populateUsersBooks(users);
+        res.json(usersWithBooks);
     }
 }
