@@ -13,7 +13,13 @@ const requestSchema = new Schema({
      }
 }, {
     timestamps: true,
-    id: true
+    id: true,
+    toObject: {
+        virtuals: true
+    },
+    toJSON: {
+        virtuals: true
+    }
 });
 
 module.exports = mongoose.model('Request', requestSchema);
