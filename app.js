@@ -16,10 +16,7 @@ const http = require('http')
   , https = require('https');
 const fs = require('fs');
 
-
-mongoose.Promise = require('bluebird');
-mongoose.connect( process.env.MONGO_CON_STR, 
-  { useMongoClient: true, promiseLibrary: require('bluebird') } )
+mongoose.connect( process.env.MONGO_CON_STR, {useNewUrlParser: true, useUnifiedTopology: true})
   .then(() =>  debug('DB connected succesfully'))
   .catch((dbErr) => {
     throw dbErr;

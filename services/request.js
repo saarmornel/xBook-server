@@ -14,7 +14,7 @@ module.exports = class requestService {
         return Request
             .find({requesting: userId})
             .populate('receiving')
-            .sort('-')
+            .sort('-updatedAt')
             .exec();
     }
 
@@ -22,7 +22,7 @@ module.exports = class requestService {
         return Request
             .find({receiving: userId})
             .populate('requesting')
-            .sort('-')
+            .sort('-updatedAt')
             .exec();
     }
 
