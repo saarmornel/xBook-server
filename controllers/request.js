@@ -26,20 +26,20 @@ module.exports = class requestController {
         if(isOwner(user,request)) {
             throw 'Request does not belong to you!';
         }
-        const requestWithData = await populateRequest(request);
+        const requestWithData = await populateRequest(request.toObject());
         res.json(requestWithData);
     }
 
     static async getIncoming(req, res) {
-        const response = await requestService.getIncoming(req.user._id)
-        .then(populateRequests)
-        res.json(response);
+        const incoming = await requestService.getIncoming(req.user._id)
+        const incomingWithData = await populateRequests(incoming.map(r=>r.toObject()))
+        res.json(incomingWithData);
     }
 
     static async getOutgoing(req, res) {
-        const response = await requestService.getOutgoing(req.user._id)
-        .then(populateRequests)
-        res.json(response);
+        const outgoing = await requestService.getOutgoing(req.user._id)
+        const outgoingWithData = await populateRequests(outgoing.map(r=>r.toObject()))
+        res.json(outgoingWithData);
     }
 
     static async create(req, res) {

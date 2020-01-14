@@ -10,7 +10,7 @@ module.exports = class userController {
         if (!user) {
             throw 'User not found!';
         }
-        const userWithBooks = await populateUserBooks(user);
+        const userWithBooks = await populateUserBooks(user.toObject());
         res.json(userWithBooks);
     }
 
@@ -19,14 +19,19 @@ module.exports = class userController {
         if (!user) {
             throw 'User not found!';
         }
-        const userWithBooks = await populateUserBooks(user);
+        debug('check:',user.toObject());
+        const userWithBooks = await populateUserBooks(user.toObject());
         res.json(userWithBooks);
     }
 
     static async getMany(req, res) {
         const users = await userService.getMany(req.user._id, req.query.startIndex);
         debug('getMany,users'+users)
-        const usersWithBooks = await populateUsersBooks(users);
+        const usersWithBooks = await populateUsersBooks(
+            users.map(
+                u=>u.toObject()
+                )
+            );
         debug('getMany,usersWithBooks'+JSON.stringify(usersWithBooks))
         res.json(usersWithBooks);
     }
