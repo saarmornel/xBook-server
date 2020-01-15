@@ -26,7 +26,8 @@ export const searchBook = async (bookName) => {
         debug('searchBook'+JSON.stringify(formattedBooks))
         return formattedBooks;
     } catch(error) {
-        console.log('httpError: ',error);
+        console.error('httpError: ',error);
+        return []
     }
 
 }
@@ -40,7 +41,8 @@ export const getBookById = async (id) => {
         debug('getBookById'+JSON.stringify(formattedBook))
         return formattedBook;
     } catch(error) {
-        console.log('httpError: ',error);
+        console.error('httpError: ',error);
+        return null
     }
 }
 
