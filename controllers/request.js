@@ -47,7 +47,7 @@ module.exports = class requestController {
         if(!bookDoc) throw 'book does not exist';
         
         const response = await requestService.create({...req.body, requesting: req.user._id})
-        .then(populateRequest)
+        .then(r=>populateRequest(r.toObject()))
         res.json(response);
     }
 
@@ -64,7 +64,7 @@ module.exports = class requestController {
             await userService.deleteBookById(request.receiving, request.book);
         }
         const response = await requestService.updateById(req.params.id, req.body)
-        .then(populateRequest)
+        .then(r=>populateRequest(r.toObject()))
         res.json(response);
     }
 
@@ -79,7 +79,7 @@ module.exports = class requestController {
         }
 
         const response = await requestService.deleteById(req.params.id)
-        .then(populateRequest)
+        .then(r=>populateRequest(r.toObject()))
         res.json(response);
     }
     
