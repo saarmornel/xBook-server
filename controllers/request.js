@@ -3,12 +3,18 @@ const requestService = require('../services/request');
 const userService = require('../services/user');
 import { REQUEST_STATUS } from '../models/Request.Status';
 import { populateRequest, populateRequests } from "../services/bookDetails.service";
+const debug = require('debug')('app:requestController')
 
+//todo: fix issue here
 const canUpdate = (user,request, proposedStatus) => {
     let canDo = [];
-    canDo = request.requesting == user && [REQUEST_STATUS.pending, REQUEST_STATUS.accepted];
-    canDo = request.receiving == user && [REQUEST_STATUS.approved, REQUEST_STATUS.declined];
-    return !!canDo.find(status => proposedStatus == status);
+    debug('canUpdate,request.requesting',request.requesting)
+    debug('canUpdate,request.receiving',request.receiving)
+    debug('canUpdate,user',user)
+    canDo = (request.requesting.toString() == user.toString()) && [REQUEST_STATUS.pending, REQUEST_STATUS.accepted];
+    canDo = (request.receiving.toString() == user.toString()) && [REQUEST_STATUS.approved, REQUEST_STATUS.declined];
+    debug('canDo',canDo)
+    return !!(canDo.find(status => proposedStatus == status));
 }
 
 const canDelete = (user,request) => !(request.requesting == user);
