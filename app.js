@@ -75,4 +75,4 @@ const httpsOptions = {
 }
 
 http.createServer(app).listen(process.env.PORT || 80);
-process.env.ENV === 'development' && https.createServer(httpsOptions, app).listen(443);
+process.env.HTTPS === '1' && https.createServer(httpsOptions, app).listen(443);
