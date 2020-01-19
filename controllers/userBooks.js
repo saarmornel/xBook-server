@@ -7,20 +7,20 @@ module.exports = class userBooksController {
 
     static async create(req, res) {
         const book = await userService.addBook(req.user._id, req.body);
-        const bookWithData = await populateBook(book);
-        res.json(bookWithData);
+        // const bookWithData = await populateBook(book);
+        res.json(book);
     }
 
     static async updateById(req, res) {
         const book = await userService.updateBookById(req.user._id, req.params.id, req.body);
-        const bookWithData = await populateBook(book);
-        res.json(bookWithData);
+        // const bookWithData = await populateBook(book);
+        res.json(book);
     }
 
     static async deleteById(req, res) {
         const book = await userService.deleteBookById(req.user._id, req.params.id);
-        const bookWithData = await populateBook(book);
-        res.json(bookWithData);
+        // const bookWithData = await populateBook(book);
+        res.json(book);
     }
     
 }

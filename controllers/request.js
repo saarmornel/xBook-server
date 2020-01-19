@@ -70,7 +70,7 @@ module.exports = class requestController {
             await userService.deleteBookById(request.receiving, request.book);
         }
         const response = await requestService.updateById(req.params.id, req.body)
-        .then(r=>populateRequest(r.toObject()))
+        // .then(r=>{populateRequest(r.toObject())})
         res.json(response);
     }
 
@@ -85,7 +85,7 @@ module.exports = class requestController {
         }
 
         const response = await requestService.deleteById(req.params.id)
-        .then(r=>populateRequest(r.toObject()))
+        // .then(r=>populateRequest(r.toObject()))
         res.json(response);
     }
     

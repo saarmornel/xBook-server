@@ -34,11 +34,11 @@ module.exports = class requestService {
     static updateById(id, request){
         delete request.requesting;
         delete request.receiving;
-        return Request.updateById(id,request);
+        return Request.updateOne({_id:id},request).exec();
     }
 
     static deleteById(id){
-        return Request.deleteById(id);
+        return Request.deleteOne({_id:id}).exec();
     }
 
 }
