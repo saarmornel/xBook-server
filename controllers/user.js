@@ -1,5 +1,7 @@
 'use strict'
 const userService = require('../services/user');
+import { populateUserBooks, populateUsersBooks } from "../services/bookDetails.service";
+const debug = require('debug')('app:userController');
 
 module.exports = class userController {
 
@@ -8,8 +10,8 @@ module.exports = class userController {
         if (!user) {
             throw 'User not found!';
         }
-
-        res.json(user);
+        const userWithBooks = await populateUserBooks(user.toObject());
+        res.json(userWithBooks);
     }
 
     static async getMe(req, res) {
@@ -17,11 +19,21 @@ module.exports = class userController {
         if (!user) {
             throw 'User not found!';
         }
-
-        res.json(user);
+        debug('check:',user.toObject());
+        const userWithBooks = await populateUserBooks(user.toObject());
+        res.json(userWithBooks);
     }
 
     static async getMany(req, res) {
-        res.json(await userService.getMany(req.user._id, req.query.startIndex));
+        console.log(req.user)
+        const users = await userService.getMany(req.user._id, req.user.facebook.friends ,req.query.startIndex);
+        debug('getMany,users'+users)
+        const usersWithBooks = await populateUsersBooks(
+            users.map(
+                u=>u.toObject()
+                )
+            );
+        debug('getMany,usersWithBooks'+JSON.stringify(usersWithBooks))
+        res.json(usersWithBooks);
     }
 }

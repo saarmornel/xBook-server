@@ -35,7 +35,7 @@ userSchema.virtual('balance').get(function () { return this.given - this.recieve
 userSchema.virtual('fullName').get(function () { return this.firstName + ' ' + this.lastName });
 
 userSchema.methods.generateJwt = function () {
-    const daysExpired = 60;
+    const daysExpired = 1;
 
     const today = new Date();
     let exp = new Date(today);
@@ -46,6 +46,10 @@ userSchema.methods.generateJwt = function () {
         firstName: this.firstName,
         lastName: this.lastName,
         email: this.email,
+        facebook: {
+            id: this.facebook.id,
+            friends: this.facebook.friends
+        },
         exp: parseInt(exp.getTime() / 1000),
     }, configAuth.secret);
 };

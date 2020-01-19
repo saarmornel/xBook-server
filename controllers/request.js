@@ -2,12 +2,19 @@
 const requestService = require('../services/request');
 const userService = require('../services/user');
 import { REQUEST_STATUS } from '../models/Request.Status';
+import { populateRequest, populateRequests } from "../services/bookDetails.service";
+const debug = require('debug')('app:requestController')
 
+//todo: fix issue here
 const canUpdate = (user,request, proposedStatus) => {
     let canDo = [];
-    canDo = request.requesting == user && [REQUEST_STATUS.pending, REQUEST_STATUS.accepted];
-    canDo = request.receiving == user && [REQUEST_STATUS.approved, REQUEST_STATUS.declined];
-    return !!canDo.find(status => proposedStatus == status);
+    debug('canUpdate,request.requesting',request.requesting)
+    debug('canUpdate,request.receiving',request.receiving)
+    debug('canUpdate,user',user)
+    canDo = (request.requesting.toString() == user) && [REQUEST_STATUS.pending, REQUEST_STATUS.accepted];
+    canDo = (request.receiving.toString() == user) && [REQUEST_STATUS.approved, REQUEST_STATUS.declined];
+    debug('canDo',canDo)
+    return !!(canDo.find(status => proposedStatus == status));
 }
 
 const canDelete = (user,request) => !(request.requesting == user);
@@ -25,23 +32,29 @@ module.exports = class requestController {
         if(isOwner(user,request)) {
             throw 'Request does not belong to you!';
         }
-
-        res.json(request);
+        const requestWithData = await populateRequest(request.toObject());
+        res.json(requestWithData);
     }
 
     static async getIncoming(req, res) {
-        res.json(await requestService.getIncoming(req.user._id));
+        const incoming = await requestService.getIncoming(req.user._id)
+        const incomingWithData = await populateRequests(incoming.map(r=>r.toObject()))
+        res.json(incomingWithData);
     }
 
     static async getOutgoing(req, res) {
-        res.json(await requestService.getOutgoing(req.user._id));
+        const outgoing = await requestService.getOutgoing(req.user._id)
+        const outgoingWithData = await populateRequests(outgoing.map(r=>r.toObject()))
+        res.json(outgoingWithData);
     }
 
     static async create(req, res) {
         const bookDoc = await userService.findBookById(req.body.receiving, req.body.book);
         if(!bookDoc) throw 'book does not exist';
         
-        res.json(await requestService.create({...req.body, requesting: req.user._id}));
+        const response = await requestService.create({...req.body, requesting: req.user._id})
+        .then(r=>populateRequest(r.toObject()))
+        res.json(response);
     }
 
     static async updateById(req, res) {
@@ -56,7 +69,9 @@ module.exports = class requestController {
             await userService.addBook(request.requesting, request.book);
             await userService.deleteBookById(request.receiving, request.book);
         }
-        res.json(await requestService.updateById(req.params.id, req.body));
+        const response = await requestService.updateById(req.params.id, req.body)
+        // .then(r=>{populateRequest(r.toObject())})
+        res.json(response);
     }
 
     static async deleteById(req, res) {
@@ -68,7 +83,10 @@ module.exports = class requestController {
         if(canDelete(user,request)) {
             throw 'Request does not belong to you!';
         }
-        res.json(await requestService.deleteById(req.params.id));
+
+        const response = await requestService.deleteById(req.params.id)
+        // .then(r=>populateRequest(r.toObject()))
+        res.json(response);
     }
     
 }
