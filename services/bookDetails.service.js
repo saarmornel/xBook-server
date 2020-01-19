@@ -5,6 +5,11 @@ export const getBook = (id) => {
     return googleBooks.getBookById(id);
 }
 
+export const isBookValid = async (id) => {
+    const book = await googleBooks.getBookById(id);
+    return book ? true : false;
+}
+
 export const searchBook = (bookName) => {
     return googleBooks.searchBook(bookName);
 }

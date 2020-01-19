@@ -25,7 +25,8 @@ module.exports = class userController {
     }
 
     static async getMany(req, res) {
-        const users = await userService.getMany(req.user._id, req.query.startIndex);
+        console.log(req.user)
+        const users = await userService.getMany(req.user._id, req.user.facebook.friends ,req.query.startIndex);
         debug('getMany,users'+users)
         const usersWithBooks = await populateUsersBooks(
             users.map(

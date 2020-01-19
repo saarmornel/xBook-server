@@ -20,11 +20,12 @@ module.exports = class userService {
     */
     static getMany(
         excludeId = null,
+        includeIDs = [],
         page = 0,
         sortOrder = '-',
         sortBy = 'recieved',
     ) {
-        const filter = {'books.available': { $eq: true}, '_id': { $ne: excludeId }};
+        const filter = {'books.available': { $eq: true}, '_id': { $ne: excludeId }, 'facebook.id': {$in: includeIDs}};
         const perPage = config.pagination.resultsPerPage;
         return User
             .find(filter)

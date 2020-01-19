@@ -1,5 +1,6 @@
 const fetch = require("node-fetch");
 const debug = require('debug')('app');
+import * as mocks from "./google.mocks";
 /*
     take only the needed info from api
 */
@@ -17,13 +18,18 @@ const cleanseBook = (book) => {
 export const searchBook = async (bookName) => {
     try {
         const maxResults = 4;
-        const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${bookName}&maxResults=${maxResults}&key=${APIKey}`);
-        const resJson = await res.json();
-        debug('searchBook-res'+JSON.stringify(resJson))
+        let resJson;
+        if(IS_MOCK) {
+            resJson = mocks.googleBooks;
+        }
+        else {
+            const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${bookName}&maxResults=${maxResults}&key=${APIKey}`);
+            resJson = await res.json();
+        }
+
         if(!resJson.totalItems) return [];
         const books = resJson.items;
         const formattedBooks = books.map(cleanseBook);
-        debug('searchBook'+JSON.stringify(formattedBooks))
         return formattedBooks;
     } catch(error) {
         console.error('httpError: ',error);
@@ -34,11 +40,16 @@ export const searchBook = async (bookName) => {
 
 export const getBookById = async (id) => {
     try {
-        const res = await fetch(`https://www.googleapis.com/books/v1/volumes/${id}?key=${APIKey}`);
-        const book = await res.json();
-        debug('book-res'+JSON.stringify(book))
+        let book;
+        if(IS_MOCK) {
+            book = mocks.googleBooks.items.find(e=>e.id === id);
+        } 
+        else {
+            const res = await fetch(`https://www.googleapis.com/books/v1/volumes/${id}?key=${APIKey}`);
+            book = await res.json();
+        }
+
         const formattedBook = cleanseBook(book);
-        debug('getBookById'+JSON.stringify(formattedBook))
         return formattedBook;
     } catch(error) {
         console.error('httpError: ',error);
@@ -46,5 +57,6 @@ export const getBookById = async (id) => {
     }
 }
 
+const IS_MOCK = process.env.ENV === 'development' ? true : false
 const APIKey = process.env.GOOGLE_API_KEY;
 debug('APIKey:'+APIKey)
