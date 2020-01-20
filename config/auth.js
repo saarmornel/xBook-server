@@ -1,5 +1,5 @@
 module.exports = {
-    'secret'  : 'SECRET',
+    'secret'  : process.env.FB_CLIENT_ID || 'SECRET',
     'facebookAuth' : {
         'clientID'      : process.env.FB_CLIENT_ID, // your App ID
         'clientSecret'  : process.env.FB_CLIENT_SECRET, // your App Secret
