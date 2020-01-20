@@ -24,7 +24,7 @@ module.exports = class userService {
         includeIDs = [],
         page = 0,
         sortOrder = '-',
-        sortBy = 'recieved',
+        sortBy = 'received',
     ) {
         const filter = {'books.available': { $eq: true}, '_id': { $ne: excludeId }, 'facebook.id': {$in: includeIDs}};
         const perPage = config.pagination.resultsPerPage;
@@ -79,7 +79,7 @@ module.exports = class userService {
         
         const requestingDoc = await User.findById(requesting).exec();
         if(!requestingDoc) throw 'User not found!';
-        requestingDoc.recived++;
+        requestingDoc.received++;
 
 
         const receivingDoc = await User.findById(receiving).exec();
