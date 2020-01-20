@@ -1,6 +1,7 @@
 'use strict'
 const User = require('../models/User');
 const config = require('../config/query');
+var Elo = require( 'elo-js' );
 
 module.exports = class userService {
     
@@ -73,15 +74,37 @@ module.exports = class userService {
     }
 
     static async updateRating(requesting, receiving) {
+        const elo = new Elo();
+        const starsCount = 5;
+        
         const requestingDoc = await User.findById(requesting).exec();
         if(!requestingDoc) throw 'User not found!';
         requestingDoc.recived++;
-        await requestingDoc.save();
+
 
         const receivingDoc = await User.findById(receiving).exec();
         if(!receivingDoc) throw 'User not found!';
         receivingDoc.given++;
+
+        const requestingRating = requestingDoc.rating;
+        const receivingRating = receivingDoc.rating;
+
+        requestingDoc.rating = elo.ifLoses(requestingRating,receivingRating)
+        receivingDoc.rating = elo.ifWins(receivingRating,requestingRating);
+
+        const highestRanking = (await User.find().sort({rating: -1}).limit(1).exec())[0].rating;
+        let starRating;
+        if(receivingDoc.rating > highestRanking) {
+            starRating = receivingDoc.rating / starsCount;
+        } else {
+            starRating = highestRanking / starsCount;
+        }
+
+        requestingDoc.stars = Math.floor(requestingDoc.rating/starRating);
+        receivingDoc.stars = Math.floor(receivingDoc.rating/starRating);
+
         await receivingDoc.save();
+        await requestingDoc.save();
     }
 
     static updateById(id, user){

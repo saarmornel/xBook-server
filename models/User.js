@@ -15,6 +15,8 @@ const userSchema = new Schema({
     email: { type: String },
     given: { type: Number, default: 0 },
     recieved: { type: Number, default: 0 },
+    rating: { type: Number, default: 3000 },
+    stars: { type: Number, default: 3 },
     books: [BookScheme],
     location: { type: String },
     phone: String,
