@@ -11,7 +11,7 @@ const canUpdate = (user,request, proposedStatus) => {
     debug('canUpdate,request.requesting',request.requesting)
     debug('canUpdate,request.receiving',request.receiving)
     debug('canUpdate,user',user)
-    canDo = (request.requesting.toString() == user) && [REQUEST_STATUS.pending, REQUEST_STATUS.accepted];
+    canDo = (request.requesting.toString() == user) && [REQUEST_STATUS.pending, REQUEST_STATUS.accepted,REQUEST_STATUS.declined];
     canDo = (request.receiving.toString() == user) && [REQUEST_STATUS.approved, REQUEST_STATUS.declined];
     debug('canDo',canDo)
     return !!(canDo.find(status => proposedStatus == status));
