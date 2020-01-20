@@ -68,6 +68,7 @@ module.exports = class requestController {
         if(req.body.status == REQUEST_STATUS.accepted) {
             await userService.addBook(request.requesting, request.book);
             await userService.deleteBookById(request.receiving, request.book);
+            await userService.updateRating(request.requesting,request.receiving);
         }
         const response = await requestService.updateById(req.params.id, req.body)
         // .then(r=>{populateRequest(r.toObject())})

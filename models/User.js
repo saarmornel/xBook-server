@@ -31,7 +31,6 @@ const userSchema = new Schema({
         }
     });
 
-userSchema.virtual('balance').get(function () { return this.given - this.recieved });
 userSchema.virtual('fullName').get(function () { return this.firstName + ' ' + this.lastName });
 
 userSchema.methods.generateJwt = function () {

@@ -72,5 +72,21 @@ module.exports = class userService {
         return null;
     }
 
+    static async updateRating(requesting, receiving) {
+        const requestingDoc = await User.findById(requesting).exec();
+        if(!requestingDoc) throw 'User not found!';
+        requestingDoc.recived++;
+        await requestingDoc.save();
+
+        const receivingDoc = await User.findById(receiving).exec();
+        if(!receivingDoc) throw 'User not found!';
+        receivingDoc.given++;
+        await receivingDoc.save();
+    }
+
+    static updateById(id, user){
+        return User.updateOne({_id:id},user).exec();
+    }
+
 }
 
