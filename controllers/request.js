@@ -14,7 +14,7 @@ const canUpdate = (user,request, proposedStatus) => {
     canDo = (request.requesting.toString() == user) && [REQUEST_STATUS.pending, REQUEST_STATUS.accepted,REQUEST_STATUS.declined];
     canDo = (request.receiving.toString() == user) && [REQUEST_STATUS.approved, REQUEST_STATUS.declined];
     debug('canDo',canDo)
-    return !!(canDo.find(status => proposedStatus == status));
+    return !!(canDo && canDo.find(status => proposedStatus == status));
 }
 
 const canDelete = (user,request) => !(request.requesting == user);
