@@ -2,9 +2,9 @@
 const User = require('../models/User');
 const config = require('../config/query');
 var Elo = require( 'elo-js' );
+const perPage = config.pagination.resultsPerPage
 
 module.exports = class userService {
-    
     /*
         in a user view: should show all books
     */
@@ -16,21 +16,72 @@ module.exports = class userService {
         .exec();
     }
 
-    /*
-        in a global view: should show only available books
-    */
     static getMany(
         excludeId = null,
-        includeIDs = [],
         page = 0,
         sortOrder = '-',
         sortBy = 'received',
     ) {
-        const filter = {'books.available': { $eq: true}, '_id': { $ne: excludeId }, 'facebook.id': {$in: includeIDs}};
-        const perPage = config.pagination.resultsPerPage;
+        const filter = {
+        '_id': { $ne: excludeId },
+        };
+        
         return User
             .find(filter)
-            .select('-facebook')
+            .select('-facebook -books')
+            .sort(sortOrder + sortBy)
+            .skip(perPage * page)
+            .limit(perPage)
+            .exec();
+    }
+
+    static async getBooksByUser(
+        id,
+        sortOrder = '-',
+        sortBy = 'updatedAt',
+    ) {
+        return User.aggregate([
+            {$match:{'_id': {$eq: id } } },
+            {$unwind: '$books'},
+            {$project: {
+                _id: "$books._id",
+                id: "$books._id",
+                available: "$books.available",
+                updatedAt: "$books.updatedAt",
+                }}
+        ])
+            .sort(sortOrder + sortBy)
+            .exec();
+    }
+
+    static async getBooks(
+        excludeId = null,
+        includeFbIDs = [],
+        excludeBooks = [],
+        page = 0,
+        sortOrder = '-',
+        sortBy = 'updatedAt',
+    ) {
+        return User.aggregate([
+            {$match:{'_id': {$ne: excludeId } } },
+            {$match:{'facebook.id': {$in: includeFbIDs}} },
+            {$unwind: '$books'},
+            {$match:{'books.available': true} },
+            {$match:{'books._id': {$nin: excludeBooks}} },
+            { $group:{
+                _id:'$books._id',
+                id: {$first:'$books._id'},
+                updatedAt: {$first:"$books.updatedAt"},
+                "user": {$first:
+                    {
+                        id: "$_id",
+                        stars: "$stars",
+                        fullName:{$concat:["$firstName"," ","$lastName"]},
+                        picture: "$picture"
+                        }
+                    }
+                } }
+            ])
             .sort(sortOrder + sortBy)
             .skip(perPage * page)
             .limit(perPage)
