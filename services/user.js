@@ -2,7 +2,8 @@
 const User = require('../models/User');
 const config = require('../config/query');
 var Elo = require( 'elo-js' );
-const perPage = config.pagination.resultsPerPage
+const perPage = config.pagination.resultsPerPage;
+const ObjectId = require('mongoose').Types.ObjectId;
 
 module.exports = class userService {
     /*
@@ -41,7 +42,7 @@ module.exports = class userService {
         sortBy = 'updatedAt',
     ) {
         return User.aggregate([
-            {$match:{'_id': {$eq: id } } },
+            {$match:{'_id': {$eq: new ObjectId(id) } } },
             {$unwind: '$books'},
             {$project: {
                 _id: "$books._id",
@@ -63,7 +64,7 @@ module.exports = class userService {
         sortBy = 'updatedAt',
     ) {
         return User.aggregate([
-            {$match:{'_id': {$ne: excludeId } } },
+            {$match:{'_id': {$ne: new ObjectId(excludeId) } } },
             {$match:{'facebook.id': {$in: includeFbIDs}} },
             {$unwind: '$books'},
             {$match:{'books.available': true} },
