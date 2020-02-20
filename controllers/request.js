@@ -39,13 +39,13 @@ module.exports = class requestController {
 
     static async getIncoming(req, res) {
         const incoming = await requestService.getIncoming(req.user._id)
-        const incomingWithData = await populateRequests(incoming.map(r=>r.toObject()))
+        const incomingWithData = await populateRequests(incoming)
         res.json(incomingWithData);
     }
 
     static async getOutgoing(req, res) {
         const outgoing = await requestService.getOutgoing(req.user._id)
-        const outgoingWithData = await populateRequests(outgoing.map(r=>r.toObject()))
+        const outgoingWithData = await populateRequests(outgoing)
         res.json(outgoingWithData);
     }
 

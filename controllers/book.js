@@ -37,6 +37,7 @@ module.exports = class bookController {
     }
 
     static async getBooks(req, res) {
+        // filter books already requested
         const outgoings = await requestService.getOutgoing(req.user._id);
         const excludeBooks = outgoings.filter(o=>o.status!==REQUEST_STATUS.declined).map(o => o.book);
 
@@ -54,9 +55,6 @@ module.exports = class bookController {
 
         const booksWithData = await populateBooks(
             books
-            // .map(
-            //     b=>b.toObject()
-            //     )
             );
 
         res.json(booksWithData);

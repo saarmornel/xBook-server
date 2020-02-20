@@ -36,7 +36,7 @@ export const populateUsersBooks = async (users) => {
 
 export const populateRequest = async (request) => {
     const data = await getBook(request.book);
-    return {...request,book: data};
+    return {...request, data};
 }
 
 export const populateRequests = async (requests) => {
