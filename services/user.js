@@ -1,9 +1,11 @@
 'use strict'
 const User = require('../models/User');
 const config = require('../config/query');
+var Elo = require( 'elo-js' );
+const perPage = config.pagination.resultsPerPage;
+const ObjectId = require('mongoose').Types.ObjectId;
 
 module.exports = class userService {
-    
     /*
         in a user view: should show all books
     */
@@ -15,21 +17,72 @@ module.exports = class userService {
         .exec();
     }
 
-    /*
-        in a global view: should show only available books
-    */
     static getMany(
         excludeId = null,
-        includeIDs = [],
         page = 0,
         sortOrder = '-',
-        sortBy = 'recieved',
+        sortBy = 'received',
     ) {
-        const filter = {'books.available': { $eq: true}, '_id': { $ne: excludeId }, 'facebook.id': {$in: includeIDs}};
-        const perPage = config.pagination.resultsPerPage;
+        const filter = {
+        '_id': { $ne: excludeId },
+        };
+        
         return User
             .find(filter)
-            .select('-facebook')
+            .select('-facebook -books')
+            .sort(sortOrder + sortBy)
+            .skip(perPage * page)
+            .limit(perPage)
+            .exec();
+    }
+
+    static async getBooksByUser(
+        id,
+        sortOrder = '-',
+        sortBy = 'updatedAt',
+    ) {
+        return User.aggregate([
+            {$match:{'_id': {$eq: new ObjectId(id) } } },
+            {$unwind: '$books'},
+            {$project: {
+                _id: "$books._id",
+                id: "$books._id",
+                available: "$books.available",
+                updatedAt: "$books.updatedAt",
+                }}
+        ])
+            .sort(sortOrder + sortBy)
+            .exec();
+    }
+
+    static async getBooks(
+        excludeId = null,
+        includeFbIDs = [],
+        excludeBooks = [],
+        page = 0,
+        sortOrder = '-',
+        sortBy = 'updatedAt',
+    ) {
+        return User.aggregate([
+            {$match:{'_id': {$ne: new ObjectId(excludeId) } } },
+            {$match:{'facebook.id': {$in: includeFbIDs}} },
+            {$unwind: '$books'},
+            {$match:{'books.available': true} },
+            {$match:{'books._id': {$nin: excludeBooks}} },
+            { $group:{
+                _id:'$books._id',
+                id: {$first:'$books._id'},
+                updatedAt: {$first:"$books.updatedAt"},
+                "user": {$first:
+                    {
+                        id: "$_id",
+                        stars: "$stars",
+                        fullName:{$concat:["$firstName"," ","$lastName"]},
+                        picture: "$picture"
+                        }
+                    }
+                } }
+            ])
             .sort(sortOrder + sortBy)
             .skip(perPage * page)
             .limit(perPage)
@@ -73,15 +126,37 @@ module.exports = class userService {
     }
 
     static async updateRating(requesting, receiving) {
+        const elo = new Elo();
+        const starsCount = 5;
+        
         const requestingDoc = await User.findById(requesting).exec();
         if(!requestingDoc) throw 'User not found!';
-        requestingDoc.recived++;
-        await requestingDoc.save();
+        requestingDoc.received++;
+
 
         const receivingDoc = await User.findById(receiving).exec();
         if(!receivingDoc) throw 'User not found!';
         receivingDoc.given++;
+
+        const requestingRating = requestingDoc.rating;
+        const receivingRating = receivingDoc.rating;
+
+        requestingDoc.rating = elo.ifLoses(requestingRating,receivingRating)
+        receivingDoc.rating = elo.ifWins(receivingRating,requestingRating);
+
+        const highestRanking = (await User.find().sort({rating: -1}).limit(1).exec())[0].rating;
+        let starRating;
+        if(receivingDoc.rating > highestRanking) {
+            starRating = receivingDoc.rating / starsCount;
+        } else {
+            starRating = highestRanking / starsCount;
+        }
+
+        requestingDoc.stars = Math.floor(requestingDoc.rating/starRating);
+        receivingDoc.stars = Math.floor(receivingDoc.rating/starRating);
+
         await receivingDoc.save();
+        await requestingDoc.save();
     }
 
     static updateById(id, user){

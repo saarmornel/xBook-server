@@ -19,6 +19,10 @@ export const populateBook = async (book) => {
     return {...book, data };
 }
 
+export const populateBooks = async (books) => {
+    return Promise.all(books.map(populateBook) );
+}
+
 export const populateUserBooks = async (user) => {
     const books = (await Promise.all(user.books.map(populateBook) )).filter(Boolean);
     debug('populateUserBooks',books)
@@ -32,7 +36,7 @@ export const populateUsersBooks = async (users) => {
 
 export const populateRequest = async (request) => {
     const data = await getBook(request.book);
-    return {...request,book: data};
+    return {...request, data};
 }
 
 export const populateRequests = async (requests) => {

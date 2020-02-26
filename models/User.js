@@ -14,7 +14,9 @@ const userSchema = new Schema({
     lastName: { type: String },
     email: { type: String },
     given: { type: Number, default: 0 },
-    recieved: { type: Number, default: 0 },
+    received: { type: Number, default: 0 },
+    rating: { type: Number, default: 3000 },
+    stars: { type: Number, default: 3 },
     books: [BookScheme],
     location: { type: String },
     phone: String,
@@ -49,7 +51,7 @@ userSchema.methods.generateJwt = function () {
             id: this.facebook.id,
             friends: this.facebook.friends
         },
-        exp: parseInt(exp.getTime() / 1000),
+        // exp: parseInt(exp.getTime() / 1000),
     }, configAuth.secret);
 };
 

@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "dev": "sudo kill node || nodemon --exec babel-node -r node_modules/dotenv/config app",
+    "dev": "sudo bash -c 'kill node || nodemon --exec babel-node -r node_modules/dotenv/config app'",
     "start": "babel-node app",
     "debug": "babel-node -r node_modules/dotenv/config --inspect app",
     "test": "mocha -r node_modules/dotenv/config --recursive"
@@ -24,6 +24,7 @@
     "cors": "^2.8.5",
     "debug": "^3.1.0",
     "dotenv": "^8.2.0",
+    "elo-js": "^1.0.1",
     "express": "^4.16.2",
     "express-session": "^1.15.6",
     "jsonwebtoken": "^8.4.0",
@@ -37,7 +38,6 @@
   "devDependencies": {
     "chai": "^4.1.2",
     "chai-http": "^4.0.0",
-    "mocha": "^5.0.5",
-    "nodemon": "^1.17.3"
+    "mocha": "^5.0.5"
   }
 }
