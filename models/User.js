@@ -51,7 +51,7 @@ userSchema.methods.generateJwt = function () {
             id: this.facebook.id,
             friends: this.facebook.friends
         },
-        exp: parseInt(exp.getTime() / 1000),
+        // exp: parseInt(exp.getTime() / 1000),
     }, configAuth.secret);
 };
 
