@@ -3,6 +3,7 @@ const debug = require('debug')('app');
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
+const configAuth = require('../config/auth');
 
 // ====================================================
 // FACEBOOK AUTHENTICATION ROUTES =====================
@@ -10,7 +11,7 @@ const passport = require('passport');
 // route for facebook authentication and login
 router.get('/facebook',
     passport.authenticate('facebook', {
-        scope: ['public_profile', 'email', 'user_friends']
+        scope: configAuth.facebookAuth.scope
     }));
 
 // handle the callback after facebook has authenticated the user
