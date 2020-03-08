@@ -23,7 +23,7 @@ export const searchBook = async (bookName) => {
             resJson = mocks.googleBooks;
         }
         else {
-            const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${bookName}&maxResults=${maxResults}&key=${APIKey}`);
+            const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(bookName)}&maxResults=${maxResults}&key=${APIKey}`);
             resJson = await res.json();
         }
 
