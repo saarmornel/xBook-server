@@ -8,8 +8,7 @@ const cleanseBook = (book) => {
     const newBook={};
     newBook.id=book.id;
     newBook.title=book.volumeInfo.title;
-    // newBook.thumbnail=book.volumeInfo.imageLinks && book.volumeInfo.imageLinks.smallThumbnail
-    newBook.thumbnail= `https://books.google.com/books/content?id=${book.id}&printsec=frontcover&img=1&zoom=1&h=160&stbn=1&key=${APIKey}`
+    newBook.thumbnail= `https://books.google.com/books/content?id=${book.id}&printsec=frontcover&img=1&zoom=1&h=160&stbn=1`
     newBook.author=book.volumeInfo.authors && book.volumeInfo.authors.join(', ');
     newBook.more=book.volumeInfo.infoLink;
     return newBook;
