@@ -40,7 +40,10 @@ module.exports = function (passport) {
                         newUser.lastName = profile.name.familyName; 
                         newUser.firstName = profile.name.givenName;
                         newUser.email = profile.emails[0].value; 
-                        newUser.facebook.friends = profile._json.friends.data.map(friend => friend.id);
+                        newUser.facebook.friends = 
+                        profile._json.friends && 
+                        profile._json.friends.data &&
+                        profile._json.friends.data.map(friend => friend.id);
                         newUser.picture = profile.photos ? profile.photos[0].value : unknownPicture;
                         newUser.save(function (err) {
                             if (err)
