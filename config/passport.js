@@ -26,7 +26,9 @@ module.exports = function (passport) {
                         return done(err);
                     if (user) {
                         user.picture = profile.photos ? profile.photos[0].value : unknownPicture;
-                        user.facebook.friends = profile._json.friends.data.map(friend => friend.id);
+                        user.facebook.friends = 
+                        profile._json.friends &&
+                        profile._json.friends.data.map(friend => friend.id);
                         user.save(function (err) {
                             if (err)
                                 return done(err);
@@ -34,7 +36,6 @@ module.exports = function (passport) {
                             return done(null, user);
                         });
                     } else {
-                        console.log(profile._json)
                         const newUser = new User();
                         newUser.facebook.id = profile.id;                
                         newUser.facebook.token = token; 
@@ -42,8 +43,7 @@ module.exports = function (passport) {
                         newUser.firstName = profile.name.givenName;
                         newUser.email = profile.emails[0].value; 
                         newUser.facebook.friends = 
-                        profile._json.friends && 
-                        profile._json.friends.data &&
+                        profile._json.friends &&
                         profile._json.friends.data.map(friend => friend.id);
                         newUser.picture = profile.photos ? profile.photos[0].value : unknownPicture;
                         newUser.save(function (err) {
