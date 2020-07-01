@@ -34,6 +34,7 @@ module.exports = function (passport) {
                             return done(null, user);
                         });
                     } else {
+                        console.log(profile._json)
                         const newUser = new User();
                         newUser.facebook.id = profile.id;                
                         newUser.facebook.token = token; 
