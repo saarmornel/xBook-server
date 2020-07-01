@@ -29,4 +29,9 @@ module.exports = class userController {
         debug('getMany,users'+users)
         res.json(users);
     }
+
+    static async updateMe(req,res) {
+        const user = await userService.updateById(req.user._id,req.body)
+        res.json(user);
+    }
 }
