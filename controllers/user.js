@@ -25,8 +25,20 @@ module.exports = class userController {
     }
 
     static async getMany(req, res) {
-        const users = await userService.getMany(req.user._id, req.query.page);
+        const users = await userService.getMany(req.user._id,null, req.query.page);
         debug('getMany,users'+users)
+        res.json(users);
+    }
+
+    static async search(req, res) {
+        const users = await userService.search(req.query.q,req.user._id,req.user.facebook.friends);
+        debug('search,users'+users)
+        res.json(users);
+    }
+
+    static async getMyFriends(req, res) {
+        const users = await userService.getMany(req.user._id,req.user.facebook.friends , req.query.page);
+        debug('getMyFriends,users'+users)
         res.json(users);
     }
 
