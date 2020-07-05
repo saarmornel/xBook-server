@@ -41,11 +41,9 @@ module.exports = class userService {
     static search(
         name,
         excludeId=null,
-        excludeIds=[],
     ) {
         return User.aggregate([
             {$match:{'_id': {$ne: excludeId}} },
-            {$match:{'_id': {$nin: excludeIds}} },
             {$project: { 
                 stars: 1,
                 picture: 1,

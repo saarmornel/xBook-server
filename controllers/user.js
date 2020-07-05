@@ -31,7 +31,7 @@ module.exports = class userController {
     }
 
     static async search(req, res) {
-        const users = await userService.search(req.query.q,req.user._id,req.user.friends);
+        const users = await userService.search(req.query.q,req.user._id);
         debug('search,users'+users)
         res.json(users);
     }
