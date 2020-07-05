@@ -14,19 +14,20 @@ module.exports = class userService {
             id,
         )
         .select('-facebook')
+        .populate('friends')
         .exec();
     }
 
     static getMany(
         excludeId,
-        includeFbIds,
+        includeIds,
         page = 0,
         sortOrder = '-',
         sortBy = 'received',
     ) {
         const filter = {};
         if(excludeId) filter["_id"]={ $ne: excludeId };
-        if(includeFbIds) filter["facebook.id"]={"$in":includeFbIds};
+        if(includeIds) filter["_id"]={"$in":includeIds};
         
         return User
             .find(filter)
@@ -40,11 +41,11 @@ module.exports = class userService {
     static search(
         name,
         excludeId=null,
-        excludeFbIds=[],
+        excludeIds=[],
     ) {
         return User.aggregate([
-            {$match:{'id': {$ne: excludeId}} },
-            {$match:{'facebook.id': {$nin: excludeFbIds}} },
+            {$match:{'_id': {$ne: excludeId}} },
+            {$match:{'_id': {$nin: excludeIds}} },
             {$project: { 
                 stars: 1,
                 picture: 1,

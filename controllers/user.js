@@ -31,19 +31,46 @@ module.exports = class userController {
     }
 
     static async search(req, res) {
-        const users = await userService.search(req.query.q,req.user._id,req.user.facebook.friends);
+        const users = await userService.search(req.query.q,req.user._id,req.user.friends);
         debug('search,users'+users)
         res.json(users);
     }
 
     static async getMyFriends(req, res) {
-        const users = await userService.getMany(req.user._id,req.user.facebook.friends , req.query.page);
+        const users = await userService.getMany(req.user._id,req.user.friends , req.query.page);
         debug('getMyFriends,users'+users)
         res.json(users);
     }
 
+    static async addFriend(req,res) {
+        const user = await userService.getById(req.user._id);
+        const friends = user.friends;
+        const id = req.params.id;
+        const index=friends.findIndex(f=>f.id===id);
+        if(index>-1) {
+            throw 'You are already friends!'
+        }
+        friends.push(id);
+        user.save();
+        res.json(user);
+    }
+
+    static async deleteFriend(req,res) {
+        const user = await userService.getById(req.user._id);
+        const friends = user.friends;
+        const id = req.params.id;
+        const index = friends.findIndex(f=>f.id===id);
+        if(index<0) {
+            throw 'You are not friends!'
+        }
+        friends.splice(index,1);
+        user.save();
+        res.json(user);
+    }
+
     static async updateMe(req,res) {
-        const user = await userService.updateById(req.user._id,req.body)
+        const update = {phone: req.body.phone,location: req.body.location};
+        const user = await userService.updateById(req.user._id,update)
         res.json(user);
     }
 }
