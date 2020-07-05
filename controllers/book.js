@@ -40,8 +40,8 @@ module.exports = class bookController {
         // filter books already requested
         const outgoings = await requestService.getOutgoing(req.user._id);
         const excludeBooks = outgoings.filter(o=>o.status!==REQUEST_STATUS.declined).map(o => o.book);
-
-        const books = await userService.getBooks(req.user._id, req.user.facebook.friends,excludeBooks,req.query.page);
+        const friends = (await userService.getById(req.user._id)).friends;
+        const books = await userService.getBooks(req.user._id, friends,excludeBooks,req.query.page);
         debug(books)
         const booksWithData = await populateBooks(
             books

@@ -14,18 +14,20 @@ module.exports = class userService {
             id,
         )
         .select('-facebook')
+        .populate('friends')
         .exec();
     }
 
     static getMany(
-        excludeId = null,
+        excludeId,
+        includeIds,
         page = 0,
         sortOrder = '-',
         sortBy = 'received',
     ) {
-        const filter = {
-        '_id': { $ne: excludeId },
-        };
+        const filter = {};
+        if(excludeId) filter["_id"]={ $ne: excludeId };
+        if(includeIds) filter["_id"]={"$in":includeIds};
         
         return User
             .find(filter)
@@ -34,6 +36,27 @@ module.exports = class userService {
             .skip(perPage * page)
             .limit(perPage)
             .exec();
+    }
+    
+    static search(
+        name,
+        excludeId=null,
+    ) {
+        return User.aggregate([
+            {$match:{'_id': {$ne: excludeId}} },
+            {$project: { 
+                stars: 1,
+                picture: 1,
+                id: "$_id","fullName": {$concat : ["$firstName", " ", "$lastName"]}
+            }},
+            {$project: {
+            "facebook":0,
+            "books":0,
+            }},
+            {$match: {"fullName":{$regex: name,$options:'i'}}}
+        ])
+        .exec()
+
     }
 
     static async getBooksByUser(

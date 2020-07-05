@@ -21,6 +21,7 @@ const userSchema = new Schema({
     location: { type: String },
     phone: String,
     picture: String,
+    friends: [{type: Schema.ObjectId,ref:'User'}]
 }, {
         usePushEach: true,
         timestamps: true,
