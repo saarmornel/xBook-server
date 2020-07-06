@@ -1,6 +1,6 @@
 export const REQUEST_STATUS = {
     pending: 'PENDING',
     approved: 'APPROVED',
-    accepted: 'ACCEPTED',
+    accepted: 'RECEIVED',
     declined: 'DECLINED'
 }
