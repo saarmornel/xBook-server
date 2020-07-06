@@ -2,6 +2,7 @@
 const userService = require('../services/user');
 import { populateUserBooks, populateBooks } from "../services/bookDetails.service";
 const debug = require('debug')('app:userController');
+const ObjectId = require('mongoose').Types.ObjectId;
 
 module.exports = class userController {
 
@@ -15,7 +16,8 @@ module.exports = class userController {
     }
 
     static async getMe(req, res) {
-        const user = await userService.getById(req.user._id);
+        let user = await userService.getById(req.user._id);
+        user = await user.populate('friends').execPopulate();
         if (!user) {
             throw 'User not found!';
         }
@@ -36,21 +38,15 @@ module.exports = class userController {
         res.json(users);
     }
 
-    static async getMyFriends(req, res) {
-        const users = await userService.getMany(req.user._id,req.user.friends , req.query.page);
-        debug('getMyFriends,users'+users)
-        res.json(users);
-    }
-
     static async addFriend(req,res) {
         const user = await userService.getById(req.user._id);
         const friends = user.friends;
-        const id = req.params.id;
-        const index=friends.findIndex(f=>f.id===id);
+        const id = ObjectId(req.params.id);
+        const index=friends.findIndex(f=>f.equals(id));
         if(index>-1) {
             throw 'You are already friends!'
         }
-        friends.push(id);
+        friends.push(new ObjectId(id));
         user.save();
         res.json(user);
     }
@@ -59,7 +55,7 @@ module.exports = class userController {
         const user = await userService.getById(req.user._id);
         const friends = user.friends;
         const id = req.params.id;
-        const index = friends.findIndex(f=>f.id===id);
+        const index = friends.findIndex(f=>f.equals(id));
         if(index<0) {
             throw 'You are not friends!'
         }

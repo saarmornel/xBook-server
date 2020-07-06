@@ -14,7 +14,6 @@ module.exports = class userService {
             id,
         )
         .select('-facebook')
-        .populate('friends')
         .exec();
     }
 
@@ -26,7 +25,7 @@ module.exports = class userService {
         sortBy = 'received',
     ) {
         const filter = {};
-        if(excludeId) filter["_id"]={ $ne: excludeId };
+        if(excludeId) filter["_id"]={ "$ne": new ObjectId(excludeId) };
         if(includeIds) filter["_id"]={"$in":includeIds};
         
         return User
@@ -43,7 +42,7 @@ module.exports = class userService {
         excludeId=null,
     ) {
         return User.aggregate([
-            {$match:{'_id': {$ne: excludeId}} },
+            {$match:{'_id': {$ne: new ObjectId(excludeId)}} },
             {$project: { 
                 stars: 1,
                 picture: 1,
@@ -80,7 +79,7 @@ module.exports = class userService {
 
     static async getBooks(
         excludeId = null,
-        includeFbIDs = [],
+        includeIDs = [],
         excludeBooks = [],
         page = 0,
         sortOrder = '-',
@@ -88,7 +87,7 @@ module.exports = class userService {
     ) {
         return User.aggregate([
             {$match:{'_id': {$ne: new ObjectId(excludeId) } } },
-            {$match:{'facebook.id': {$in: includeFbIDs}} },
+            {$match:{'_id': {$in: includeIDs}} },
             {$unwind: '$books'},
             {$match:{'books.available': true} },
             {$match:{'books._id': {$nin: excludeBooks}} },
