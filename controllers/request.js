@@ -58,20 +58,43 @@ module.exports = class requestController {
         res.json(response);
     }
 
-    static async updateById(req, res) {
+    static async setRead(req,res) {
+        const request = await requestService.getById(req.params.id);
+        if (!request) {
+            throw 'Request not found!';
+        } 
+        const user = req.user._id;
+        
+        const update={}
+        if(request.requesting.equals(user)) 
+        update['read.requesting']=true;
+        else update['read.receiving']=true;
+        const response = await requestService.updateById(req.params.id, update)
+        res.json(response);
+    }
+
+    static async updateStatus(req, res) {
         const request = await requestService.getById(req.params.id);
         if (!request) {
             throw 'Request not found!';
         }
         const user = req.user._id;
-        if(!canUpdate(user,request,req.body.status)) throw 'lack permissions';
-
-        if(req.body.status == REQUEST_STATUS.accepted) {
+        const status = req.body.status;
+        if(!canUpdate(user,request,status)) throw 'lack permissions';
+        
+        if(status == REQUEST_STATUS.accepted) {
             await userService.addBook(request.requesting, request.book);
             await userService.deleteBookById(request.receiving, request.book);
             await userService.updateRating(request.requesting,request.receiving);
         }
-        const response = await requestService.updateById(req.params.id, req.body)
+
+        let read;
+        if(request.requesting.equals(user)) 
+        read={requesting:true,receiving:false};
+        else read={requesting:false,receiving:true};
+
+        const update={status,read}
+        const response = await requestService.updateById(req.params.id, update)
         // .then(r=>{populateRequest(r.toObject())})
         res.json(response);
     }

@@ -81,8 +81,6 @@ module.exports = class requestService {
     }
 
     static updateById(id, request){
-        delete request.requesting;
-        delete request.receiving;
         return Request.updateOne({_id:id},request).exec();
     }
 
