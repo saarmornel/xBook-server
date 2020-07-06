@@ -32,8 +32,8 @@ module.exports = class userService {
             .find(filter)
             .select('-facebook -books')
             .sort(sortOrder + sortBy)
-            .skip(perPage * page)
-            .limit(perPage)
+            // .skip(perPage * page)
+            // .limit(perPage)
             .exec();
     }
     
@@ -90,7 +90,7 @@ module.exports = class userService {
             {$match:{'_id': {$in: includeIDs}} },
             {$unwind: '$books'},
             {$match:{'books.available': true} },
-            {$match:{'books._id': {$nin: excludeBooks}} },
+            // {$match:{'books._id': {$nin: excludeBooks}} },
             { $group:{
                 _id:'$books._id',
                 id: {$first:'$books._id'},
@@ -106,8 +106,8 @@ module.exports = class userService {
                 } }
             ])
             .sort(sortOrder + sortBy)
-            .skip(perPage * page)
-            .limit(perPage)
+            // .skip(perPage * page)
+            // .limit(perPage)
             .exec();
     }
 
