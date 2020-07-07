@@ -3,8 +3,10 @@ const Schema = mongoose.Schema;
 import { REQUEST_STATUS } from './Request.Status';
 
 const requestSchema = new Schema({
-    requesting : { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    receiving : { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    requesting : //the one that request the book
+    { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    receiving : //the one that is asked for the book,thus receiveing the request
+    { type: Schema.Types.ObjectId, ref: 'User', required: true },
     book : { type: String, required: true },
     status: {type: String, default: REQUEST_STATUS.pending, enum: Object.values(REQUEST_STATUS)},
     read: { 
