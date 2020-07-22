@@ -10,9 +10,10 @@ xBook is mobile-first web app written with the following technologies:
   * Server Side : Nodejs,Mongodb
 
 ## Main features:
-  * ELO rating system to provide users an indication of how much user is benevolent in giving away his books.
+  * ELO rating system to provide users an indication of how much user is benevolent in giving away his books
   * Friendship system
   * Login via Facebook with JWT authentication process
   * Trading system
+  * Using Google Books API
 
 
